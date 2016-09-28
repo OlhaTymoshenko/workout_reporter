@@ -1,8 +1,5 @@
 package ua.com.amicablesoft.android.wr;
 
-import com.ibm.icu.text.Transliterator;
-
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,23 +46,12 @@ public class MainPresenter {
 
     }
 
-    public File makeVideo(File storageDir) {
-        File file = null;
-        try {
-            file = createVideoFile(storageDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return file;
-    }
-
-    private File createVideoFile(File storageDir) throws IOException {
-        String date = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(new Date());
+    public String createVideoFileName() throws IOException {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         String name = getPowerlifterName();
         String exercise = currentExercise.toString();
         String setNumber = getSetNumber();
-        String videoFileName = date + "_" + name + "_" + exercise + "_" + setNumber + "_";
-        return File.createTempFile(videoFileName, ".mp4", storageDir);
+        return name + "-" + exercise + "-" + date + "-" + setNumber + ".mp4";
     }
 
     private String getSetNumber() {
@@ -74,25 +60,18 @@ public class MainPresenter {
 
     private String getPowerlifterName() {
         String name = currentPowerlifter.getName();
-        if (name.contains(" ")) {
-            int index = name.indexOf(" ");
-            name = name.substring(0, index);
-        }
-        if (name.contains("ь")) {
-            name = name.replace("ь", "");
-        }
-        String id = "NFD; Any-Latin; NFC; [:Nonspacing Mark:] Remove";
-        return Transliterator.getInstance(id).transform(name);
+        String lastName = currentPowerlifter.getLastName();
+        return lastName.substring(0, 1) + name.substring(0, 1);
 
     }
 
     public ArrayList<Powerlifter> createList() {
         ArrayList<Powerlifter> powerlifters = new ArrayList<>();
-        Powerlifter powerlifter = new Powerlifter("1", "Крымов Андрей");
+        Powerlifter powerlifter = new Powerlifter("1", "Андрей", "Крымов");
         powerlifters.add(powerlifter);
-        Powerlifter powerlifter1 = new Powerlifter("2", "Наньев Андрей");
+        Powerlifter powerlifter1 = new Powerlifter("2", "Андрей", "Наньев");
         powerlifters.add(powerlifter1);
-        Powerlifter powerlifter2 = new Powerlifter("3", "Соловьева Лариса");
+        Powerlifter powerlifter2 = new Powerlifter("3", "Лариса", "Соловьева");
         powerlifters.add(powerlifter2);
         return powerlifters;
     }

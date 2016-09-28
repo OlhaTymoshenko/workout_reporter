@@ -26,6 +26,16 @@
             android:label="@string/title_add_powerlifter_activity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <provider
+            android:authorities="ua.com.amicablesoft.android.wr.fileprovider"
+            android:name="android.support.v4.content.FileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths">
+            </meta-data>
+        </provider>
     </application>
 
 </manifest>

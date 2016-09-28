@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +29,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.firebase.ui.auth.AuthUI.EMAIL_PROVIDER;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private Spinner spinner;
     private MainPresenter mainPresenter;
     static final int PERMISSIONS_REQUEST = 1;
+    static final int REQUEST_VIDEO_CAPTURE = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
                         (ContextCompat.checkSelfPermission(getApplicationContext(),
                         Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
                                 PackageManager.PERMISSION_GRANTED)) {
-                    startVideo();
+                    try {
+                        startVideo();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     ActivityCompat.requestPermissions(MainActivity.this,
                             new String[] {Manifest.permission.CAMERA,
@@ -116,7 +123,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            startVideo();
+            try {
+                startVideo();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else {
             Toast.makeText(getApplicationContext(), "This action requires permissions",
                     Toast.LENGTH_SHORT).show();
@@ -197,13 +208,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
         return firebaseAuth.getCurrentUser() != null;
     }
 
-    private void startVideo() {
+    private void startVideo() throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
-            File storageDir = getExternalFilesDir(Environment.DIRECTORY_MOVIES);
-            File file = mainPresenter.makeVideo(storageDir);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-            startActivity(intent);
+            File videoPath = getApplicationContext()
+                    .getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+            String fileName = mainPresenter.createVideoFileName();
+            File newFile = new File(videoPath, fileName);
+            Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
+                    "ua.com.amicablesoft.android.wr.fileprovider", newFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+            intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
     }
 

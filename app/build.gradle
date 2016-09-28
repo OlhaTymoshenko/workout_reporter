@@ -30,7 +30,7 @@ dependencies {
     compile 'com.firebaseui:firebase-ui-auth:0.6.0'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:appcompat-v7:24.2.1'
-    compile group: 'com.ibm.icu', name: 'icu4j', version: '57.1'
+    compile "com.android.support:support-core-utils:24.2.1"
 }
 
 apply plugin: 'com.google.gms.google-services'

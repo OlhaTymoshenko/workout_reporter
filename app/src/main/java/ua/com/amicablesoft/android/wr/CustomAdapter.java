@@ -24,16 +24,20 @@ public class CustomAdapter extends ArrayAdapter<Powerlifter> {
 
     @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         TextView textView = (TextView) super.getView(position, convertView, parent);
-        textView.setText(powerlifters.get(position).getName());
+        String lastNameAndName = powerlifters.get(position).getLastName() + " " +
+                powerlifters.get(position).getName();
+        textView.setText(lastNameAndName);
         return textView;
     }
 
     @Override
-    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+    public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
         TextView textView = (TextView) super.getDropDownView(position, convertView, parent);
-        textView.setText(powerlifters.get(position).getName());
+        String lastNameAndName = powerlifters.get(position).getLastName() + " " +
+                powerlifters.get(position).getName();
+        textView.setText(lastNameAndName);
         return textView;
     }
 }
