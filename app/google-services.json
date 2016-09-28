@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "258020887306",
+    "firebase_url": "https://workout-reporter.firebaseio.com",
+    "project_id": "workout-reporter",
+    "storage_bucket": "workout-reporter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258020887306:android:e6bd20dba0b719f5",
+        "android_client_info": {
+          "package_name": "ua.com.amicablesoft.android.wr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "258020887306-2i70002ikju0m901ct9sk6pcffnp3tu6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ua.com.amicablesoft.android.wr",
+            "certificate_hash": "F87A707CBE0529DDBC9C542CD3088834598540BC"
+          }
+        },
+        {
+          "client_id": "258020887306-r2g5okhqim15dq39ar3cateki0i7eesi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKMPjxKWi0V17AIuyD4saUdyFm8xWn7kg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "258020887306-r2g5okhqim15dq39ar3cateki0i7eesi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
