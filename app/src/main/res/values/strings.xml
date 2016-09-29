@@ -5,11 +5,11 @@
     <string name="radio_button_squats">Squats</string>
     <string name="radio_button_bench_press">Bench press</string>
     <string name="radio_button_dead_lift">Dead lift</string>
-    <string name="title_activity_main2">Main2Activity</string>
     <string name="spinner_lifter">Powerlifter</string>
     <string name="title_add_lifter">Add Powerlifter</string>
     <string name="title_sign_out">Sign Out</string>
     <string name="hint_name">Name</string>
     <string name="title_save_new_powerlifter">Save</string>
     <string name="title_add_powerlifter_activity">New Powerlifter</string>
+    <string name="snackbar_main_activity">Video was saved</string>
 </resources>

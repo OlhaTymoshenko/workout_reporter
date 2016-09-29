@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -121,7 +122,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
             if (resultCode == RESULT_OK) {
-//                videoPath = null;
+                Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_main_activity,
+                        Snackbar.LENGTH_SHORT).show();
             }
         }
     }
