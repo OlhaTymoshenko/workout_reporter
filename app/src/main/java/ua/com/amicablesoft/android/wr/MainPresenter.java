@@ -23,8 +23,9 @@ public class MainPresenter {
     public void start() {
         ArrayList<Powerlifter> powerlifters = createList();
         mainView.setListPowerlifters(powerlifters);
-        mainView.setPowerlifter(1);
+        mainView.setPowerlifter(0);
         mainView.setExercise(Exercise.BenchPress);
+        currentExercise = Exercise.BenchPress;
     }
 
     public void changePowerlifter(Powerlifter powerlifter) {
