@@ -46,14 +46,6 @@ public class MainPresenter {
 
     }
 
-    public String createVideoFileName() throws IOException {
-        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        String name = getPowerlifterName();
-        String exercise = currentExercise.toString();
-        String setNumber = getSetNumber();
-        return name + "-" + exercise + "-" + date + "-" + setNumber + ".mp4";
-    }
-
     private String getSetNumber() {
         return "1";
     }
@@ -63,6 +55,21 @@ public class MainPresenter {
         String lastName = currentPowerlifter.getLastName();
         return lastName.substring(0, 1) + name.substring(0, 1);
 
+    }
+
+    public String createVideoFileName() throws IOException {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String name = getPowerlifterName();
+        String exercise = currentExercise.toString();
+        String setNumber = getSetNumber();
+        return name + "-" + exercise + "-" + date + "-" + setNumber + ".mp4";
+    }
+
+    public String createDirName() {
+        String powerlifterName = currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String exercise = currentExercise.toString();
+        return "/" + powerlifterName + "/" + date + "/" + exercise + "/";
     }
 
     public ArrayList<Powerlifter> createList() {

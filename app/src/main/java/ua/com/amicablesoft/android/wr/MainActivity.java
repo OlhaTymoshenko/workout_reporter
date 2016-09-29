@@ -211,9 +211,14 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private void startVideo() throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
-            File videoPath = getApplicationContext()
-                    .getExternalFilesDir(Environment.DIRECTORY_MOVIES);
+            String dirName = mainPresenter.createDirName();
             String fileName = mainPresenter.createVideoFileName();
+            File videoPath = getApplicationContext()
+                    .getExternalFilesDir(Environment.DIRECTORY_MOVIES + dirName);
+            assert videoPath != null;
+            if (!videoPath.exists()) {
+                videoPath.mkdirs();
+            }
             File newFile = new File(videoPath, fileName);
             Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
                     "ua.com.amicablesoft.android.wr.fileprovider", newFile);
