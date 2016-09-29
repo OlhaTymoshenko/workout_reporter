@@ -17,14 +17,19 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
-    <style name="RadioButtonFont" parent="@android:style/TextAppearance">
+    <style name="SpinnerFont" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/colorPrimaryText</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="TextViewFont" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/colorSecondaryText</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="RadioButtonFont" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorPrimaryText</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
 </resources>

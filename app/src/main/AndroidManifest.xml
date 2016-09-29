@@ -23,7 +23,7 @@
         </activity>
         <activity
             android:name=".AddPowerlifterActivity"
-            android:label="@string/title_add_powerlifter_activity"
+            android:label="@string/activity_title_new_powerlifter"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <provider

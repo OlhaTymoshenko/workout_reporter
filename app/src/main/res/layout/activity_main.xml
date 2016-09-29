@@ -20,23 +20,23 @@
             android:id="@+id/text_view_lifter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/view_vertical_margin"
-            android:text="@string/label_lifter"
+            android:layout_marginBottom="@dimen/common_margin"
+            android:text="@string/text_view_powerlifter"
             style="@style/TextViewFont"/>
 
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/view_vertical_margin">
+            android:layout_marginBottom="@dimen/common_margin">
         </Spinner>
 
         <TextView
             android:id="@+id/text_view_exercise"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/view_vertical_margin"
-            android:text="@string/label_exercise"
+            android:layout_marginBottom="@dimen/common_margin"
+            android:text="@string/text_view_exercise"
             style="@style/TextViewFont"/>
 
         <RadioGroup
@@ -49,6 +49,7 @@
                 android:id="@+id/radio_button_squats"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/common_margin"
                 android:text="@string/radio_button_squats"
                 style="@style/RadioButtonFont"/>
 
@@ -56,6 +57,7 @@
                 android:id="@+id/radio_button_bench_press"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/common_margin"
                 android:text="@string/radio_button_bench_press"
                 style="@style/RadioButtonFont"/>
 
@@ -63,6 +65,7 @@
                 android:id="@+id/radio_button_dead_lift"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/common_margin"
                 android:text="@string/radio_button_dead_lift"
                 style="@style/RadioButtonFont"/>
         </RadioGroup>

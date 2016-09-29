@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
             if (resultCode == RESULT_OK) {
-                Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_main_activity,
+                Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text,
                         Snackbar.LENGTH_SHORT).show();
             }
         }
