@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private Spinner spinner;
     private MainPresenter mainPresenter;
+    private File videoPath;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
 
@@ -118,6 +119,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 finish();
             }
         }
+        if (requestCode == REQUEST_VIDEO_CAPTURE) {
+            if (resultCode == RESULT_OK) {
+//                videoPath = null;
+            }
+        }
     }
 
     @Override
@@ -189,6 +195,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
     }
 
+    @Override
+    public int getNumberOfFiles() {
+        int count = 0;
+        if (videoPath != null) {
+            File[] list = videoPath.listFiles();
+            for (File f : list) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private void startAuthActivity() {
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder()
@@ -212,13 +230,13 @@ public class MainActivity extends AppCompatActivity implements MainView {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
             String dirName = mainPresenter.createDirName();
-            String fileName = mainPresenter.createVideoFileName();
-            File videoPath = getApplicationContext()
+            videoPath = getApplicationContext()
                     .getExternalFilesDir(Environment.DIRECTORY_MOVIES + dirName);
             assert videoPath != null;
             if (!videoPath.exists()) {
                 videoPath.mkdirs();
             }
+            String fileName = mainPresenter.createVideoFileName();
             File newFile = new File(videoPath, fileName);
             Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
                     "ua.com.amicablesoft.android.wr.fileprovider", newFile);

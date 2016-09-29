@@ -46,15 +46,17 @@ public class MainPresenter {
 
     }
 
-    private String getSetNumber() {
-        return "1";
-    }
-
     private String getPowerlifterName() {
         String name = currentPowerlifter.getName();
         String lastName = currentPowerlifter.getLastName();
         return lastName.substring(0, 1) + name.substring(0, 1);
 
+    }
+
+    private String getSetNumber() {
+        int count = mainView.getNumberOfFiles();
+        Integer number = count + 1;
+        return number.toString();
     }
 
     public String createVideoFileName() throws IOException {
