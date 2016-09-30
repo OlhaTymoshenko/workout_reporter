@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private Spinner spinner;
     private MainPresenter mainPresenter;
     private File videoPath;
+    private File newFile;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
 
@@ -124,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
             if (resultCode == RESULT_OK) {
                 Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text,
                         Snackbar.LENGTH_SHORT).show();
+            } else if (resultCode == RESULT_CANCELED) {
+                boolean deleted = newFile.delete();
             }
         }
     }
@@ -239,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 videoPath.mkdirs();
             }
             String fileName = mainPresenter.createVideoFileName();
-            File newFile = new File(videoPath, fileName);
+            newFile = new File(videoPath, fileName);
             Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
                     "ua.com.amicablesoft.android.wr.fileprovider", newFile);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
