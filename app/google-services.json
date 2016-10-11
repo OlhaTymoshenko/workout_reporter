@@ -40,6 +40,13 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
+              "client_id": "258020887306-fq1puct9tq7jcr01l3d5t1dmbhob68tn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ua.com.amicablesoft.ios.wr.Workout-Reporter"
+              }
+            },
+            {
               "client_id": "258020887306-r2g5okhqim15dq39ar3cateki0i7eesi.apps.googleusercontent.com",
               "client_type": 3
             }

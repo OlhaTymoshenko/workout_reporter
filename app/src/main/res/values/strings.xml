@@ -13,4 +13,7 @@
     <string name="label_save_new_powerlifter">Save</string>
     <string name="edit_text_hint_name">Name</string>
     <string name="edit_text_hint_last_name">Last name</string>
+    <string name="error_required_field">This field is required</string>
+    <string name="error_short_name">This name is too short</string>
+    <string name="error_short_last_name">This last name is too short</string>
 </resources>

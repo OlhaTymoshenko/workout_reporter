@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import ua.com.amicablesoft.android.wr.models.Exercise;
+import ua.com.amicablesoft.android.wr.models.Powerlifter;
+
 /**
  * Created by lapa on 25.09.16.
  */
@@ -21,8 +24,20 @@ public class MainPresenter {
     }
 
     public void start() {
-        ArrayList<Powerlifter> powerlifters = createList();
-        mainView.setListPowerlifters(powerlifters);
+        Repository repository = new Repository();
+        repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
+            @Override
+            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifterArrayList) {
+                ArrayList<Powerlifter> powerlifters = new ArrayList<>();
+                powerlifters.addAll(powerlifterArrayList);
+                mainView.setListPowerlifters(powerlifters);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
         mainView.setPowerlifter(0);
         mainView.setExercise(Exercise.BenchPress);
         currentExercise = Exercise.BenchPress;
@@ -44,20 +59,6 @@ public class MainPresenter {
                 currentExercise = Exercise.DeadLift;
                 break;
         }
-
-    }
-
-    private String getPowerlifterName() {
-        String name = currentPowerlifter.getName();
-        String lastName = currentPowerlifter.getLastName();
-        return lastName.substring(0, 1) + name.substring(0, 1);
-
-    }
-
-    private String getSetNumber() {
-        int count = mainView.getNumberOfFiles();
-        Integer number = count + 1;
-        return number.toString();
     }
 
     public String createVideoFileName() throws IOException {
@@ -75,14 +76,20 @@ public class MainPresenter {
         return "/" + powerlifterName + "/" + date + "/" + exercise + "/";
     }
 
-    public ArrayList<Powerlifter> createList() {
-        ArrayList<Powerlifter> powerlifters = new ArrayList<>();
-        Powerlifter powerlifter = new Powerlifter("1", "Андрей", "Крымов");
-        powerlifters.add(powerlifter);
-        Powerlifter powerlifter1 = new Powerlifter("2", "Андрей", "Наньев");
-        powerlifters.add(powerlifter1);
-        Powerlifter powerlifter2 = new Powerlifter("3", "Лариса", "Соловьева");
-        powerlifters.add(powerlifter2);
-        return powerlifters;
+    public void callWriteNewUser() {
+        Repository repository = new Repository();
+        repository.writeNewUser();
+    }
+
+    private String getPowerlifterName() {
+        String name = currentPowerlifter.getName();
+        String lastName = currentPowerlifter.getLastName();
+        return lastName.substring(0, 1) + name.substring(0, 1);
+    }
+
+    private String getSetNumber() {
+        int count = mainView.getNumberOfFiles();
+        Integer number = count + 1;
+        return number.toString();
     }
 }

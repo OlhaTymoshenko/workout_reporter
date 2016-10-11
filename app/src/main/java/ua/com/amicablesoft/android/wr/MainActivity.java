@@ -24,14 +24,19 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import ua.com.amicablesoft.android.wr.models.Exercise;
+import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
 import static com.firebase.ui.auth.AuthUI.EMAIL_PROVIDER;
 import static com.firebase.ui.auth.AuthUI.GOOGLE_PROVIDER;
@@ -49,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -57,10 +63,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 Powerlifter powerlifter = (Powerlifter) adapterView.getAdapter().getItem(i);
                 mainPresenter.changePowerlifter(powerlifter);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radio_group);
@@ -117,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 initPresenter();
+                mainPresenter.callWriteNewUser();
             } else {
                 finish();
             }

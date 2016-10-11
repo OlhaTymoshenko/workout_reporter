@@ -39,10 +39,11 @@
             android:hint="@string/edit_text_hint_name">
 
             <android.support.design.widget.TextInputEditText
+                android:id="@+id/name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/common_margin"
-                android:inputType="textPersonName"
+                android:inputType="textCapWords"
                 android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
         <android.support.design.widget.TextInputLayout
@@ -52,9 +53,10 @@
             android:hint="@string/edit_text_hint_last_name">
 
             <android.support.design.widget.TextInputEditText
+                android:id="@+id/last_name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
+                android:inputType="textCapWords"
                 android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
