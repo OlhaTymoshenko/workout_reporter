@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private File newFile;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
+    static final int REQUEST_ADD_POWERLIFTER = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 boolean deleted = newFile.delete();
             }
         }
+        if (requestCode == REQUEST_ADD_POWERLIFTER) {
+            if (resultCode == RESULT_CANCELED) {
+                mainPresenter.update();
+            }
+        }
     }
 
     @Override
@@ -163,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         switch (item.getItemId()) {
             case R.id.action_add_lifter:
                 Intent intent = new Intent(this, AddPowerlifterActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
                 return true;
             case R.id.action_sign_out:
                 signOut();
@@ -176,8 +182,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void setListPowerlifters(ArrayList<Powerlifter> list) {
-        CustomAdapter customAdapter =
-                new CustomAdapter(getApplicationContext(), R.layout.spinner_item, list);
+        CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), R.layout.spinner_item, list);
         spinner.setAdapter(customAdapter);
     }
 

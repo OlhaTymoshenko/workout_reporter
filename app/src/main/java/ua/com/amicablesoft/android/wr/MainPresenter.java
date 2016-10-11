@@ -18,13 +18,14 @@ public class MainPresenter {
     private final MainView mainView;
     private Powerlifter currentPowerlifter;
     private Exercise currentExercise;
+    private Repository repository;
 
     public MainPresenter (MainView mainView) {
         this.mainView = mainView;
     }
 
     public void start() {
-        Repository repository = new Repository();
+        repository = new Repository();
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override
             public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifterArrayList) {
@@ -41,6 +42,23 @@ public class MainPresenter {
         mainView.setPowerlifter(0);
         mainView.setExercise(Exercise.BenchPress);
         currentExercise = Exercise.BenchPress;
+    }
+
+    public void update() {
+        repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
+            @Override
+            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifterArrayList) {
+                ArrayList<Powerlifter> powerlifters = new ArrayList<>();
+                powerlifters.addAll(powerlifterArrayList);
+                mainView.setListPowerlifters(powerlifters);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+        mainView.setPowerlifter(0);
     }
 
     public void changePowerlifter(Powerlifter powerlifter) {
@@ -79,7 +97,6 @@ public class MainPresenter {
             mainView.setError();
             return null;
         }
-
     }
 
     public void callWriteNewUser() {
