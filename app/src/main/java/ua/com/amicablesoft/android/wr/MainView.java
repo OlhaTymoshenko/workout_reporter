@@ -15,4 +15,5 @@ public interface MainView {
     void setExercise(Exercise exercise);
     void setListPowerlifters(ArrayList<Powerlifter> list);
     int getNumberOfFiles();
+    void setError();
 }

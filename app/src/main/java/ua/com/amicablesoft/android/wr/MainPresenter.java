@@ -70,10 +70,16 @@ public class MainPresenter {
     }
 
     public String createDirName() {
-        String powerlifterName = currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
-        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        String exercise = currentExercise.toString();
-        return "/" + powerlifterName + "/" + date + "/" + exercise + "/";
+        if (currentPowerlifter != null) {
+            String powerlifterName = currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
+            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            String exercise = currentExercise.toString();
+            return "/" + powerlifterName + "/" + date + "/" + exercise + "/";
+        } else {
+            mainView.setError();
+            return null;
+        }
+
     }
 
     public void callWriteNewUser() {

@@ -30,11 +30,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-import io.fabric.sdk.android.Fabric;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import io.fabric.sdk.android.Fabric;
 import ua.com.amicablesoft.android.wr.models.Exercise;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
             if (resultCode == RESULT_OK) {
-                Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text,
+                Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text_video,
                         Snackbar.LENGTH_SHORT).show();
             } else if (resultCode == RESULT_CANCELED) {
                 boolean deleted = newFile.delete();
@@ -217,6 +217,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
         return count;
     }
 
+    @Override
+    public void setError() {
+        Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text_powerlifter,
+                Snackbar.LENGTH_LONG).show();
+    }
+
     private void startAuthActivity() {
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder()
@@ -240,19 +246,21 @@ public class MainActivity extends AppCompatActivity implements MainView {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
             String dirName = mainPresenter.createDirName();
-            videoPath = getApplicationContext()
-                    .getExternalFilesDir(Environment.DIRECTORY_MOVIES + dirName);
-            assert videoPath != null;
-            if (!videoPath.exists()) {
-                videoPath.mkdirs();
+            if (dirName != null) {
+                videoPath = getApplicationContext()
+                        .getExternalFilesDir(Environment.DIRECTORY_MOVIES + dirName);
+                assert videoPath != null;
+                if (!videoPath.exists()) {
+                    videoPath.mkdirs();
+                }
+                String fileName = mainPresenter.createVideoFileName();
+                newFile = new File(videoPath, fileName);
+                Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
+                        "ua.com.amicablesoft.android.wr.fileprovider", newFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
             }
-            String fileName = mainPresenter.createVideoFileName();
-            newFile = new File(videoPath, fileName);
-            Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
-                    "ua.com.amicablesoft.android.wr.fileprovider", newFile);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-            intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
     }
 
