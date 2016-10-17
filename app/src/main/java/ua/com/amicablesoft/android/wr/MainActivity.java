@@ -3,7 +3,9 @@ package ua.com.amicablesoft.android.wr;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -33,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 import ua.com.amicablesoft.android.wr.models.Exercise;
@@ -46,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private Spinner spinner;
     private MainPresenter mainPresenter;
-    private File videoPath;
-    private File newFile;
+    private File videoPath = null;
+    private File video;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
@@ -132,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text_video,
                         Snackbar.LENGTH_SHORT).show();
             } else if (resultCode == RESULT_CANCELED) {
-                boolean deleted = newFile.delete();
+                boolean deleted = video.delete();
             }
         }
         if (requestCode == REQUEST_ADD_POWERLIFTER) {
@@ -252,18 +255,26 @@ public class MainActivity extends AppCompatActivity implements MainView {
         if (intent.resolveActivity(getPackageManager()) != null) {
             String dirName = mainPresenter.createDirName();
             if (dirName != null) {
-                videoPath = getApplicationContext()
-                        .getExternalFilesDir(Environment.DIRECTORY_MOVIES + dirName);
-                assert videoPath != null;
-                if (!videoPath.exists()) {
-                    videoPath.mkdirs();
-                }
+                File filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
                 String fileName = mainPresenter.createVideoFileName();
-                newFile = new File(videoPath, fileName);
-                Uri contentUri = FileProvider.getUriForFile(getApplicationContext(),
-                        "ua.com.amicablesoft.android.wr.fileprovider", newFile);
+                videoPath = new File(filePath, dirName);
+                videoPath.mkdirs();
+                video = new File(videoPath, fileName);
+                Uri contentUri;
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    contentUri = Uri.fromFile(video);
+                }
+                else {
+                    contentUri = FileProvider.getUriForFile(getApplicationContext(),
+                            "ua.com.amicablesoft.android.wr.fileprovider", video);
+                    List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_ALL);
+                    for (ResolveInfo info : resolveInfos) {
+                        String packageName = info.activityInfo.packageName;
+                        grantUriPermission(packageName, contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    }
+                }
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
             }
         }
