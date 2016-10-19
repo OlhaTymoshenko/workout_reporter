@@ -217,10 +217,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public int getNumberOfFiles() {
         int count = 0;
         if (videoPath != null) {
-            File[] list = videoPath.listFiles();
-            for (File f : list) {
-                count++;
-            }
+            count = videoPath.listFiles().length;
         }
         return count;
     }
