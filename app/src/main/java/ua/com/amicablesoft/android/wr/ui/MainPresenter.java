@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr;
+package ua.com.amicablesoft.android.wr.ui;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import ua.com.amicablesoft.android.wr.dal.IRepository;
+import ua.com.amicablesoft.android.wr.dal.Repository;
 import ua.com.amicablesoft.android.wr.models.Exercise;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 

@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr;
+package ua.com.amicablesoft.android.wr.ui;
 
 import android.Manifest;
 import android.content.Intent;
@@ -26,7 +26,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,7 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.fabric.sdk.android.Fabric;
+import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Exercise;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
@@ -58,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

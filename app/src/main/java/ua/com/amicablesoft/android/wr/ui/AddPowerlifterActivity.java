@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr;
+package ua.com.amicablesoft.android.wr.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+
+import ua.com.amicablesoft.android.wr.R;
 
 public class AddPowerlifterActivity extends AppCompatActivity implements AddPowerlifterView {
 

@@ -1,6 +1,6 @@
-package ua.com.amicablesoft.android.wr;
+package ua.com.amicablesoft.android.wr.ui;
 
-import android.content.Intent;
+import ua.com.amicablesoft.android.wr.dal.Repository;
 
 /**
  * Created by lapa on 03.10.16.

@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr;
+package ua.com.amicablesoft.android.wr.dal;
 
 import java.util.ArrayList;
 

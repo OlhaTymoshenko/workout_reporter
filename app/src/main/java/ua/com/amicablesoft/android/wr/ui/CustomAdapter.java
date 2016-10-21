@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr;
+package ua.com.amicablesoft.android.wr.ui;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
