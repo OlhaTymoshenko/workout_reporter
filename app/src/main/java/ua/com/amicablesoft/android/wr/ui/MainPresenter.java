@@ -1,11 +1,13 @@
 package ua.com.amicablesoft.android.wr.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.dal.IRepository;
 import ua.com.amicablesoft.android.wr.dal.Repository;
 import ua.com.amicablesoft.android.wr.models.Exercise;
@@ -21,6 +23,7 @@ public class MainPresenter {
     private Powerlifter currentPowerlifter;
     private Exercise currentExercise;
     private Repository repository;
+    private File currentVideoPath;
 
     public MainPresenter (MainView mainView) {
         this.mainView = mainView;
@@ -42,11 +45,12 @@ public class MainPresenter {
             }
         });
         mainView.setPowerlifter(0);
-        mainView.setExercise(Exercise.BenchPress);
+        mainView.setExercise(1);
         currentExercise = Exercise.BenchPress;
+        currentVideoPath = null;
     }
 
-    public void update() {
+    public void onPowerlifterAdded() {
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override
             public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifterArrayList) {
@@ -67,17 +71,13 @@ public class MainPresenter {
         currentPowerlifter = powerlifter;
     }
 
-    public void changeExercise(String exercise) {
-        switch (exercise) {
-            case "Squats":
-                currentExercise = Exercise.Squats;
-                break;
-            case "Bench press":
-                currentExercise = Exercise.BenchPress;
-                break;
-            case "Dead lift":
-                currentExercise = Exercise.DeadLift;
-                break;
+    public void changeExercise(Integer exercise) {
+        if (exercise == 0) {
+            currentExercise = Exercise.Squats;
+        } else if (exercise == 1) {
+            currentExercise = Exercise.BenchPress;
+        } else if (exercise == 2) {
+            currentExercise = Exercise.DeadLift;
         }
     }
 
@@ -96,14 +96,41 @@ public class MainPresenter {
             String exercise = currentExercise.toString();
             return "/" + powerlifterName + "/" + date + "/" + exercise + "/";
         } else {
-            mainView.setError();
+            mainView.showSnackbar(R.string.snackbar_text_powerlifter);
             return null;
         }
+    }
+
+    public File createFile() throws IOException {
+        String dirName = createDirName();
+        File filePath = mainView.createFilePath();
+        String fileName = createVideoFileName();
+        File videoPath = new File(filePath, dirName);
+        videoPath.mkdirs();
+        currentVideoPath = videoPath;
+        return new File(videoPath, fileName);
     }
 
     public void callWriteNewUser() {
         Repository repository = new Repository();
         repository.writeNewUser();
+    }
+
+    public void onNewVideoAction() {
+        mainView.requestPermissions();
+    }
+
+    public void setSnackbarVideoAction() {
+        mainView.showSnackbar(R.string.snackbar_text_video);
+    }
+
+    public void setSnackbarPermissions() {
+        mainView.showSnackbar(R.string.snackbar_text_permissions);
+    }
+
+    public void createVideo() throws IOException {
+        File videoFile = createFile();
+        mainView.recordVideo(videoFile);
     }
 
     private String getPowerlifterName() {
@@ -112,8 +139,16 @@ public class MainPresenter {
         return lastName.substring(0, 1) + name.substring(0, 1);
     }
 
+    private int getNumberOfFiles() {
+        int count = 0;
+        if (currentVideoPath != null) {
+            count = currentVideoPath.listFiles().length;
+        }
+        return count;
+    }
+
     private String getSetNumber() {
-        int count = mainView.getNumberOfFiles();
+        int count = getNumberOfFiles();
         Integer number = count + 1;
         return number.toString();
     }

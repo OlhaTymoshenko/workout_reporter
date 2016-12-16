@@ -10,6 +10,7 @@
     <string name="menu_sign_out">Sign Out</string>
     <string name="snackbar_text_video">Video was saved</string>
     <string name="snackbar_text_powerlifter">First of all you should add a powerlifter</string>
+    <string name="snackbar_text_permissions">This action requires permissions</string>
     <string name="activity_title_new_powerlifter">New Powerlifter</string>
     <string name="label_save_new_powerlifter">Save</string>
     <string name="edit_text_hint_name">Name</string>

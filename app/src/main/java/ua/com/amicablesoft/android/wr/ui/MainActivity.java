@@ -24,7 +24,6 @@ import android.widget.AdapterView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ua.com.amicablesoft.android.wr.R;
-import ua.com.amicablesoft.android.wr.models.Exercise;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
 import static com.firebase.ui.auth.AuthUI.EMAIL_PROVIDER;
@@ -48,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private Spinner spinner;
     private MainPresenter mainPresenter;
-    private File videoPath = null;
     private File video;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
@@ -74,7 +71,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton radioButton = (RadioButton) radioGroup.findViewById(i);
-                String exercise = radioButton.getText().toString();
+                int id = radioButton.getId();
+                Integer exercise = chooseExercise(id);
                 mainPresenter.changeExercise(exercise);
             }
         });
@@ -82,22 +80,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if ((ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) &&
-                        (ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                                PackageManager.PERMISSION_GRANTED)) {
-                    try {
-                        startVideo();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[] {Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PERMISSIONS_REQUEST);
-                }
+                mainPresenter.onNewVideoAction();
             }
         });
         if (isAuthenticated()) {
@@ -130,15 +113,14 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
             if (resultCode == RESULT_OK) {
-                Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text_video,
-                        Snackbar.LENGTH_SHORT).show();
+                mainPresenter.setSnackbarVideoAction();
             } else if (resultCode == RESULT_CANCELED) {
                 boolean deleted = video.delete();
             }
         }
         if (requestCode == REQUEST_ADD_POWERLIFTER) {
             if (resultCode == RESULT_CANCELED) {
-                mainPresenter.update();
+                mainPresenter.onPowerlifterAdded();
             }
         }
     }
@@ -147,13 +129,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             try {
-                startVideo();
+                mainPresenter.createVideo();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            Toast.makeText(getApplicationContext(), "This action requires permissions",
-                    Toast.LENGTH_SHORT).show();
+            mainPresenter.setSnackbarPermissions();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -193,37 +174,43 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void setExercise(Exercise exercise) {
-        String exerciseName = exercise.toString();
-        switch (exerciseName) {
-            case "Squats":
-                RadioButton radioButtonSquats = (RadioButton) findViewById(R.id.radio_button_squats);
-                radioButtonSquats.setChecked(true);
-                break;
-            case "BenchPress":
-                RadioButton radioButtonBenchPress = (RadioButton) findViewById(R.id.radio_button_bench_press);
-                radioButtonBenchPress.setChecked(true);
-                break;
-            case "DeadLift":
-                RadioButton radioButtonDeadLift = (RadioButton) findViewById(R.id.radio_button_dead_lift);
-                radioButtonDeadLift.setChecked(true);
-                break;
+    public void setExercise(Integer exercise) {
+        if (exercise == 0) {
+            RadioButton radioButtonSquats = (RadioButton) findViewById(R.id.radio_button_squats);
+            radioButtonSquats.setChecked(true);
+        } else if (exercise == 1) {
+            RadioButton radioButtonBenchPress = (RadioButton) findViewById(R.id.radio_button_bench_press);
+            radioButtonBenchPress.setChecked(true);
+        } else if (exercise == 2) {
+            RadioButton radioButtonDeadLift = (RadioButton) findViewById(R.id.radio_button_dead_lift);
+            radioButtonDeadLift.setChecked(true);
         }
     }
 
     @Override
-    public int getNumberOfFiles() {
-        int count = 0;
-        if (videoPath != null) {
-            count = videoPath.listFiles().length;
-        }
-        return count;
-    }
-
-    @Override
-    public void setError() {
-        Snackbar.make(findViewById(R.id.activity_main), R.string.snackbar_text_powerlifter,
+    public void showSnackbar(int message) {
+        Snackbar.make(findViewById(R.id.activity_main), message,
                 Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void requestPermissions() {
+        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                        PackageManager.PERMISSION_GRANTED)) {
+            try {
+                mainPresenter.createVideo();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[] {Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSIONS_REQUEST);
+        }
     }
 
     private void startAuthActivity() {
@@ -231,6 +218,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 AuthUI.getInstance().createSignInIntentBuilder()
                         .setProviders(EMAIL_PROVIDER, GOOGLE_PROVIDER)
                         .setTheme(R.style.AppTheme)
+                        .setLogo(R.drawable.ic_icon)
                         .build(),
                 RC_SIGN_IN);
     }
@@ -245,34 +233,44 @@ public class MainActivity extends AppCompatActivity implements MainView {
         return firebaseAuth.getCurrentUser() != null;
     }
 
-    private void startVideo() throws IOException {
+    private Integer chooseExercise(int id) {
+        Integer exercise = null;
+        if (id == R.id.radio_button_squats) {
+            exercise = 0;
+        } else if (id == R.id.radio_button_bench_press) {
+            exercise = 1;
+        } else if (id == R.id.radio_button_dead_lift) {
+            exercise = 2;
+        }
+        return exercise;
+    }
+
+    @Override
+    public void recordVideo(File videoFile) throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
-            String dirName = mainPresenter.createDirName();
-            if (dirName != null) {
-                File filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
-                String fileName = mainPresenter.createVideoFileName();
-                videoPath = new File(filePath, dirName);
-                videoPath.mkdirs();
-                video = new File(videoPath, fileName);
-                Uri contentUri;
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    contentUri = Uri.fromFile(video);
+            video = videoFile;
+            Uri contentUri;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                contentUri = Uri.fromFile(video);
+            } else {
+                contentUri = FileProvider.getUriForFile(getApplicationContext(),
+                        "ua.com.amicablesoft.android.wr.fileprovider", video);
+                List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_ALL);
+                for (ResolveInfo info : resolveInfos) {
+                    String packageName = info.activityInfo.packageName;
+                    grantUriPermission(packageName, contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 }
-                else {
-                    contentUri = FileProvider.getUriForFile(getApplicationContext(),
-                            "ua.com.amicablesoft.android.wr.fileprovider", video);
-                    List<ResolveInfo> resolveInfos = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_ALL);
-                    for (ResolveInfo info : resolveInfos) {
-                        String packageName = info.activityInfo.packageName;
-                        grantUriPermission(packageName, contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    }
-                }
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-//                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
             }
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
+//                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
+    }
+
+    @Override
+    public File createFilePath() {
+        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
     }
 
     private void signOut() {

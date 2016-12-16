@@ -1,8 +1,9 @@
 package ua.com.amicablesoft.android.wr.ui;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import ua.com.amicablesoft.android.wr.models.Exercise;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
 /**
@@ -12,8 +13,10 @@ import ua.com.amicablesoft.android.wr.models.Powerlifter;
 public interface MainView {
 
     void setPowerlifter(int position);
-    void setExercise(Exercise exercise);
+    void setExercise(Integer exercise);
     void setListPowerlifters(ArrayList<Powerlifter> list);
-    int getNumberOfFiles();
-    void setError();
+    void requestPermissions();
+    void showSnackbar(int message);
+    void recordVideo(File videoFile) throws IOException;
+    File createFilePath();
 }
