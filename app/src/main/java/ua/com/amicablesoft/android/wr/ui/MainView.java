@@ -18,5 +18,4 @@ public interface MainView {
     void requestPermissions();
     void showSnackbar(int message);
     void recordVideo(File videoFile) throws IOException;
-    File createFilePath();
 }

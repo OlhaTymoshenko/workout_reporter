@@ -7,7 +7,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -266,11 +265,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
 //                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
-    }
-
-    @Override
-    public File createFilePath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
     }
 
     private void signOut() {

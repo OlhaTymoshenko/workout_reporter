@@ -1,5 +1,7 @@
 package ua.com.amicablesoft.android.wr.ui;
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -47,7 +49,6 @@ public class MainPresenter {
         mainView.setPowerlifter(0);
         mainView.setExercise(1);
         currentExercise = Exercise.BenchPress;
-        currentVideoPath = null;
     }
 
     public void onPowerlifterAdded() {
@@ -103,11 +104,11 @@ public class MainPresenter {
 
     public File createFile() throws IOException {
         String dirName = createDirName();
-        File filePath = mainView.createFilePath();
-        String fileName = createVideoFileName();
+        File filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
         File videoPath = new File(filePath, dirName);
         videoPath.mkdirs();
         currentVideoPath = videoPath;
+        String fileName = createVideoFileName();
         return new File(videoPath, fileName);
     }
 
