@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
             case R.id.action_sign_out:
                 showLoading();
                 signOut();
-                finish();
+                finish(); //not sure
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
