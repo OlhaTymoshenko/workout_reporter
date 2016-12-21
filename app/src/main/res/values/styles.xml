@@ -32,4 +32,6 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="Wr.TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium"/>
+
 </resources>

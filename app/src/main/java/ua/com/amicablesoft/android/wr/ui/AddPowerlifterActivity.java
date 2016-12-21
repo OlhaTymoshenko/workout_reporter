@@ -82,6 +82,7 @@ public class AddPowerlifterActivity extends AppCompatActivity implements AddPowe
             focusView.requestFocus();
         } else {
             addPowerlifterPresenter.callWriteNewPowerlifter(name, lastName);
+            setResult(RESULT_OK);
             finish();
         }
     }

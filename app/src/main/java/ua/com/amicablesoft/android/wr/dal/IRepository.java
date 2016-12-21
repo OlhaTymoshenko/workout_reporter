@@ -3,11 +3,16 @@ package ua.com.amicablesoft.android.wr.dal;
 import java.util.ArrayList;
 
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.models.User;
 
 /**
  * Created by lapa on 07.10.16.
  */
 public interface IRepository {
+
+    interface LoadUserCallback {
+        void found(boolean userFound);
+    }
 
     interface LoadPowerliftersCallback {
         void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifterArrayList);
@@ -16,9 +21,8 @@ public interface IRepository {
 
     void writeNewPowerlifter(String name, String lastName);
 
-    void writeNewUser();
-
     void getPowerlifters(LoadPowerliftersCallback loadPowerliftersCallback);
 
-    ArrayList<Powerlifter> readPowerlifters();
+    void userExist(User user, LoadUserCallback loadUserCallback);
+    void userSave(User user);
 }

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import ua.com.amicablesoft.android.wr.dto.UserDto;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 import ua.com.amicablesoft.android.wr.models.User;
 
@@ -37,16 +38,16 @@ public class Repository implements IRepository {
 
     }
 
-    @Override
-    public void writeNewUser() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        String userEmail = firebaseAuth.getCurrentUser().getEmail();
-        assert userEmail != null;
-        User user = new User(userEmail);
-        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        firebaseDatabase.child("users").child(userId).setValue(user);
-    }
+//    @Override
+//    public void writeNewUser() {
+//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+//        String userId = firebaseAuth.getCurrentUser().getUid();
+//        String userEmail = firebaseAuth.getCurrentUser().getEmail();
+//        assert userEmail != null;
+//        User user = new User(userEmail);
+//        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+//        firebaseDatabase.child("users").child(userId).setValue(user);
+//    }
 
     @Override
     public void getPowerlifters(final LoadPowerliftersCallback loadPowerliftersCallback) {
@@ -75,28 +76,27 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public ArrayList<Powerlifter> readPowerlifters() {
-        final ArrayList<Powerlifter> powerlifters = new ArrayList<>();
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
+    public void userExist(final User user, final LoadUserCallback loadUserCallback) {
         DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        firebaseDatabase.child("users/" + userId + "/powerlifters").addListenerForSingleValueEvent(
+        firebaseDatabase.child("users").child(user.getId()).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                            Powerlifter powerlifter = snapshot.getValue(Powerlifter.class);
-                            powerlifters.add(powerlifter);
-                        }
-            }
+                        loadUserCallback.found(dataSnapshot.exists());
+                    }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.w("geLifters:onCancelled", databaseError.toException());
+                        // TODO error
+                        loadUserCallback.found(false);
                     }
                 }
         );
-        return powerlifters;
+    }
 
+    @Override
+    public void userSave(User user) {
+        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        firebaseDatabase.child("users").child(user.getId()).setValue(new UserDto(user.getEmail()));
     }
 }

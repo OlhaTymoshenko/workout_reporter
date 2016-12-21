@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private Spinner spinner;
     private MainPresenter mainPresenter;
     private File video;
+    private static final int DIALOG_ID = 3;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
@@ -105,22 +106,42 @@ public class MainActivity extends AppCompatActivity implements MainView {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
                 initPresenter();
-                mainPresenter.callWriteNewUser();
+                mainPresenter.onAuthInSuccess();
             } else {
                 finish();
             }
         }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
             if (resultCode == RESULT_OK) {
-                mainPresenter.setSnackbarVideoAction();
+                mainPresenter.onSnackbarVideoAction();
             } else if (resultCode == RESULT_CANCELED) {
                 boolean deleted = video.delete();
             }
         }
         if (requestCode == REQUEST_ADD_POWERLIFTER) {
-            if (resultCode == RESULT_CANCELED) {
+            if (resultCode == RESULT_OK) {
                 mainPresenter.onPowerlifterAdded();
             }
+        }
+    }
+
+    @Override
+    public void requestPermissions() {
+        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) &&
+                (ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                        PackageManager.PERMISSION_GRANTED)) {
+            try {
+                mainPresenter.createVideo();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[] {Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSIONS_REQUEST);
         }
     }
 
@@ -133,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 e.printStackTrace();
             }
         } else {
-            mainPresenter.setSnackbarPermissions();
+            mainPresenter.onSnackbarPermissions();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
@@ -149,10 +170,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add_lifter:
-                Intent intent = new Intent(this, AddPowerlifterActivity.class);
-                startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
+                openAddPowerlifterView();
                 return true;
             case R.id.action_sign_out:
+                showLoading();
                 signOut();
                 return true;
             default:
@@ -187,61 +208,25 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void showSnackbar(int message) {
-        Snackbar.make(findViewById(R.id.activity_main), message,
-                Snackbar.LENGTH_LONG).show();
+    public void openAddPowerlifterView() {
+        Intent intent = new Intent(this, AddPowerlifterActivity.class);
+        startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
     }
 
     @Override
-    public void requestPermissions() {
-        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) &&
-                (ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
-                        PackageManager.PERMISSION_GRANTED)) {
-            try {
-                mainPresenter.createVideo();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[] {Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSIONS_REQUEST);
-        }
+    public void showLoading() {
+        CommonProcessDialogFragment.show(this.getFragmentManager(), DIALOG_ID);
     }
 
-    private void startAuthActivity() {
-        startActivityForResult(
-                AuthUI.getInstance().createSignInIntentBuilder()
-                        .setProviders(EMAIL_PROVIDER, GOOGLE_PROVIDER)
-                        .setTheme(R.style.AppTheme)
-                        .setLogo(R.drawable.ic_icon)
-                        .build(),
-                RC_SIGN_IN);
+    @Override
+    public void dismissLoading() {
+        CommonProcessDialogFragment.dismiss(this.getFragmentManager(), DIALOG_ID);
     }
 
-    private void initPresenter() {
-        mainPresenter = new MainPresenter(this);
-        mainPresenter.start();
-    }
-
-    private boolean isAuthenticated() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        return firebaseAuth.getCurrentUser() != null;
-    }
-
-    private Integer chooseExercise(int id) {
-        Integer exercise = null;
-        if (id == R.id.radio_button_squats) {
-            exercise = 0;
-        } else if (id == R.id.radio_button_bench_press) {
-            exercise = 1;
-        } else if (id == R.id.radio_button_dead_lift) {
-            exercise = 2;
-        }
-        return exercise;
+    @Override
+    public void showSnackbar(int message) {
+        Snackbar.make(findViewById(R.id.activity_main), message,
+                Snackbar.LENGTH_LONG).show();
     }
 
     @Override
@@ -262,9 +247,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 }
             }
             intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
-//                intent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
+    }
+
+    private void startAuthActivity() {
+        startActivityForResult(
+                AuthUI.getInstance().createSignInIntentBuilder()
+                        .setProviders(EMAIL_PROVIDER, GOOGLE_PROVIDER)
+                        .setTheme(R.style.AppTheme)
+                        .setLogo(R.drawable.ic_icon)
+                        .build(),
+                RC_SIGN_IN);
     }
 
     private void signOut() {
@@ -273,8 +267,33 @@ public class MainActivity extends AppCompatActivity implements MainView {
             public void onComplete(@NonNull Task<Void> task) {
                 Intent intent = new Intent(MainActivity.this, MainActivity.class);
                 startActivity(intent);
+                dismissLoading();
             }
         });
+    }
+
+    private boolean isAuthenticated() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        return firebaseAuth.getCurrentUser() != null;
+    }
+
+    private void initPresenter() {
+        if (mainPresenter == null) {
+            mainPresenter = new MainPresenter(this);
+            mainPresenter.onStart();
+        }
+    }
+
+    private Integer chooseExercise(int id) {
+        Integer exercise = null;
+        if (id == R.id.radio_button_squats) {
+            exercise = 0;
+        } else if (id == R.id.radio_button_bench_press) {
+            exercise = 1;
+        } else if (id == R.id.radio_button_dead_lift) {
+            exercise = 2;
+        }
+        return exercise;
     }
 }
 

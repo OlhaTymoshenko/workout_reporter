@@ -2,6 +2,8 @@ package ua.com.amicablesoft.android.wr.ui;
 
 import android.os.Environment;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -14,50 +16,52 @@ import ua.com.amicablesoft.android.wr.dal.IRepository;
 import ua.com.amicablesoft.android.wr.dal.Repository;
 import ua.com.amicablesoft.android.wr.models.Exercise;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.models.User;
 
 /**
  * Created by lapa on 25.09.16.
  */
 
-public class MainPresenter {
+class MainPresenter {
 
-    private final MainView mainView;
+    private final MainView view;
     private Powerlifter currentPowerlifter;
     private Exercise currentExercise;
     private Repository repository;
     private File currentVideoPath;
 
-    public MainPresenter (MainView mainView) {
-        this.mainView = mainView;
+    MainPresenter (MainView view) {
+        this.view = view;
     }
 
-    public void start() {
+    void onStart() {
+        view.showLoading();
         repository = new Repository();
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override
-            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifterArrayList) {
-                ArrayList<Powerlifter> powerlifters = new ArrayList<>();
-                powerlifters.addAll(powerlifterArrayList);
-                mainView.setListPowerlifters(powerlifters);
+            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifters) {
+                view.setListPowerlifters(powerlifters);
+                if (powerlifters.isEmpty()) {
+                    view.openAddPowerlifterView();
+                }
+                view.dismissLoading();
             }
 
             @Override
             public void onDataNotAvailable() {
-
+                view.dismissLoading();
             }
         });
-        mainView.setPowerlifter(0);
-        mainView.setExercise(1);
+        view.setPowerlifter(0);
+        view.setExercise(1);
         currentExercise = Exercise.BenchPress;
     }
 
-    public void onPowerlifterAdded() {
+    void onPowerlifterAdded() {
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override
-            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifterArrayList) {
-                ArrayList<Powerlifter> powerlifters = new ArrayList<>();
-                powerlifters.addAll(powerlifterArrayList);
-                mainView.setListPowerlifters(powerlifters);
+            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifters) {
+                view.setListPowerlifters(powerlifters);
             }
 
             @Override
@@ -65,14 +69,14 @@ public class MainPresenter {
 
             }
         });
-        mainView.setPowerlifter(0);
+        view.setPowerlifter(0);
     }
 
-    public void changePowerlifter(Powerlifter powerlifter) {
+    void changePowerlifter(Powerlifter powerlifter) {
         currentPowerlifter = powerlifter;
     }
 
-    public void changeExercise(Integer exercise) {
+    void changeExercise(Integer exercise) {
         if (exercise == 0) {
             currentExercise = Exercise.Squats;
         } else if (exercise == 1) {
@@ -82,7 +86,7 @@ public class MainPresenter {
         }
     }
 
-    public String createVideoFileName() throws IOException {
+    private String createVideoFileName() throws IOException {
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         String name = getPowerlifterName();
         String exercise = currentExercise.toString();
@@ -90,19 +94,19 @@ public class MainPresenter {
         return name + "-" + exercise + "-" + date + "-" + setNumber + ".mp4";
     }
 
-    public String createDirName() {
+    private String createDirName() {
         if (currentPowerlifter != null) {
             String powerlifterName = currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
             String exercise = currentExercise.toString();
             return "/" + powerlifterName + "/" + date + "/" + exercise + "/";
         } else {
-            mainView.showSnackbar(R.string.snackbar_text_powerlifter);
+            view.showSnackbar(R.string.snackbar_text_powerlifter);
             return null;
         }
     }
 
-    public File createFile() throws IOException {
+    private File createFile() throws IOException {
         String dirName = createDirName();
         File filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
         File videoPath = new File(filePath, dirName);
@@ -112,26 +116,35 @@ public class MainPresenter {
         return new File(videoPath, fileName);
     }
 
-    public void callWriteNewUser() {
-        Repository repository = new Repository();
-        repository.writeNewUser();
+    void onAuthInSuccess() {
+        final Repository repository = new Repository();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        final User user = new User(auth.getCurrentUser().getUid(), auth.getCurrentUser().getEmail());
+        repository.userExist(user, new IRepository.LoadUserCallback() {
+                    @Override
+                    public void found(boolean userFound) {
+                        if (!userFound) {
+                            repository.userSave(user);
+                        }
+                    }
+                });
     }
 
-    public void onNewVideoAction() {
-        mainView.requestPermissions();
+    void onNewVideoAction() {
+        view.requestPermissions();
     }
 
-    public void setSnackbarVideoAction() {
-        mainView.showSnackbar(R.string.snackbar_text_video);
+    void onSnackbarVideoAction() {
+        view.showSnackbar(R.string.snackbar_text_video);
     }
 
-    public void setSnackbarPermissions() {
-        mainView.showSnackbar(R.string.snackbar_text_permissions);
+    void onSnackbarPermissions() {
+        view.showSnackbar(R.string.snackbar_text_permissions);
     }
 
-    public void createVideo() throws IOException {
+    void createVideo() throws IOException {
         File videoFile = createFile();
-        mainView.recordVideo(videoFile);
+        view.recordVideo(videoFile);
     }
 
     private String getPowerlifterName() {

@@ -11,11 +11,15 @@ import ua.com.amicablesoft.android.wr.models.Powerlifter;
  */
 
 public interface MainView {
-
-    void setPowerlifter(int position);
     void setExercise(Integer exercise);
+    void setPowerlifter(int position);
     void setListPowerlifters(ArrayList<Powerlifter> list);
     void requestPermissions();
     void showSnackbar(int message);
     void recordVideo(File videoFile) throws IOException;
+
+    void showLoading();
+    void dismissLoading();
+
+    void openAddPowerlifterView();
 }

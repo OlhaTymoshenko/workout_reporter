@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:orientation="horizontal"
+    tools:context="ua.com.amicablesoft.android.wr.ui.CommonProcessDialogFragment">
+    <ProgressBar
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        style="@style/Widget.AppCompat.ProgressBar"/>
+    <TextView
+        android:id="@+id/common_process_dialog_label_message"
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:gravity="center_vertical"
+        android:textAppearance="@style/Wr.TextAppearance.Medium"
+        tools:text="@string/common_label_one_moment"/>
+</LinearLayout>
