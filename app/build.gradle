@@ -23,8 +23,8 @@ android {
         applicationId "ua.com.amicablesoft.android.wr"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -33,9 +33,9 @@ android {
         }
         release {
             storeFile file("../keys/release.keystore")
-            storePassword "workout_reporter"
+            storePassword "secret"
             keyAlias "workout_reporter"
-            keyPassword "workout_reporter"
+            keyPassword "secret"
         }
     }
     buildTypes {
