@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "258020887306-67te36945bsebdcom040r0ttjsm1l4c6.apps.googleusercontent.com",
+          "client_id": "258020887306-odfo44lst0u5i1bj8k7kaa117ap6ugdr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "ua.com.amicablesoft.android.wr",
-            "certificate_hash": "A52FC4F4690242D265AE55DCCEC4A9270B668959"
+            "certificate_hash": "5EE11CCA68B4663E98F69A0E88C692E01FAABDB9"
           }
         },
         {
@@ -48,15 +48,15 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
+              "client_id": "258020887306-r2g5okhqim15dq39ar3cateki0i7eesi.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
               "client_id": "258020887306-fq1puct9tq7jcr01l3d5t1dmbhob68tn.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "ua.com.amicablesoft.ios.wr.Workout-Reporter"
               }
-            },
-            {
-              "client_id": "258020887306-r2g5okhqim15dq39ar3cateki0i7eesi.apps.googleusercontent.com",
-              "client_type": 3
             }
           ]
         },
