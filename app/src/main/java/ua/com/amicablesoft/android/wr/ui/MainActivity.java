@@ -25,6 +25,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ui.ResultCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,14 +33,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
-
-import static com.firebase.ui.auth.AuthUI.EMAIL_PROVIDER;
-import static com.firebase.ui.auth.AuthUI.GOOGLE_PROVIDER;
-import static com.firebase.ui.auth.ui.AcquireEmailHelper.RC_SIGN_IN;
 
 public class MainActivity extends AppCompatActivity implements MainView {
 
@@ -50,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
+    private static final int RC_SIGN_IN = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,8 +106,14 @@ public class MainActivity extends AppCompatActivity implements MainView {
             if (resultCode == RESULT_OK) {
                 initPresenter();
                 mainPresenter.onAuthInSuccess();
-            } else {
-                finish();
+            }
+            if (resultCode == RESULT_CANCELED){
+                Snackbar.make(findViewById(R.id.activity_main),
+                        R.string.snackbar_text_sign_in_canceled, Snackbar.LENGTH_LONG).show();
+            }
+            if (resultCode == ResultCodes.RESULT_NO_NETWORK) {
+                Snackbar.make(findViewById(R.id.activity_main),
+                        R.string.snackbar_text_no_internet_connection, Snackbar.LENGTH_LONG).show();
             }
         }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
@@ -175,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
             case R.id.action_sign_out:
                 showLoading();
                 signOut();
-                finish(); //not sure
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -255,7 +259,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     private void startAuthActivity() {
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder()
-                        .setProviders(EMAIL_PROVIDER, GOOGLE_PROVIDER)
+                        .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
                         .setTheme(R.style.AppTheme)
                         .setLogo(R.drawable.ic_icon)
                         .build(),
