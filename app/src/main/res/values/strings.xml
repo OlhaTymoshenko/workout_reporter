@@ -7,7 +7,10 @@
     <string name="radio_button_bench_press">Bench press</string>
     <string name="radio_button_dead_lift">Dead lift</string>
     <string name="menu_add_powerlifter">Add Powerlifter</string>
+    <string name="menu_open_gallery">Gallery</string>
     <string name="menu_sign_out">Sign Out</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="drawer_open">Open navigation drawer</string>
     <string name="snackbar_text_video">Video was saved</string>
     <string name="snackbar_text_powerlifter">First of all you should add a powerlifter</string>
     <string name="snackbar_text_permissions">This action requires permissions</string>
@@ -21,4 +24,5 @@
     <string name="error_short_name">This name is too short</string>
     <string name="error_short_last_name">This last name is too short</string>
     <string name="common_label_one_moment">Processing</string>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>

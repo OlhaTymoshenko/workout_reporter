@@ -10,13 +10,16 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -39,11 +42,14 @@ import java.util.List;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
-public class MainActivity extends AppCompatActivity implements MainView {
+public class MainActivity extends AppCompatActivity implements MainView,
+        NavigationView.OnNavigationItemSelectedListener {
 
     private Spinner spinner;
     private MainPresenter mainPresenter;
     private File video;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
     private static final int DIALOG_ID = 3;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
@@ -54,6 +60,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        drawerToggle.syncState();
+        drawerToggle.setDrawerIndicatorEnabled(true);
+
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -82,11 +99,36 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 mainPresenter.onNewVideoAction();
             }
         });
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
         if (isAuthenticated()) {
             initPresenter();
         } else {
             startAuthActivity();
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_add_lifter) {
+            openAddPowerlifterView();
+        } else if (id == R.id.action_open_gallery) {
+
+        } else if (id == R.id.action_sign_out) {
+            showLoading();
+            signOut();
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -96,6 +138,16 @@ public class MainActivity extends AppCompatActivity implements MainView {
             initPresenter();
         } else {
             startAuthActivity();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -162,29 +214,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
             mainPresenter.onSnackbarPermissions();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_lifter:
-                openAddPowerlifterView();
-                return true;
-            case R.id.action_sign_out:
-                showLoading();
-                signOut();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
     }
 
     @Override
