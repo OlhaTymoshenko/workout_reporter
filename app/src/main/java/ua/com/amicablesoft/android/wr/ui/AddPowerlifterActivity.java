@@ -42,13 +42,13 @@ public class AddPowerlifterActivity extends AppCompatActivity implements AddPowe
                 finish();
                 return true;
             case R.id.action_save_new_powerlifter:
-                attemptSaveNewPowerlifter();
+                attemptSaveNewPowerlifter(item);
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void attemptSaveNewPowerlifter() {
+    private void attemptSaveNewPowerlifter(MenuItem item) {
         TextInputLayout nameLayout = (TextInputLayout) findViewById(R.id.name_input_layout);
         nameLayout.setError(null);
         TextInputLayout lastNameLayout = (TextInputLayout) findViewById(R.id.last_name_input_layout);
@@ -80,9 +80,11 @@ public class AddPowerlifterActivity extends AppCompatActivity implements AddPowe
         }
         if (cancel) {
             focusView.requestFocus();
+
         } else {
             addPowerlifterPresenter.callWriteNewPowerlifter(name, lastName);
             setResult(RESULT_OK);
+            item.setEnabled(false);
             finish();
         }
     }
