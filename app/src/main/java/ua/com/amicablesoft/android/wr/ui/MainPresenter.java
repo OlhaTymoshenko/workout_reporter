@@ -97,9 +97,9 @@ class MainPresenter {
     private String createDirName() {
         if (currentPowerlifter != null) {
             String powerlifterName = currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
-            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
             String exercise = currentExercise.toString();
-            return "/" + powerlifterName + "/" + date + "/" + exercise + "/";
+            String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+            return "/" + powerlifterName + "/" + exercise + "/" + date + "/";
         } else {
             view.showSnackbar(R.string.snackbar_text_powerlifter);
             return null;
