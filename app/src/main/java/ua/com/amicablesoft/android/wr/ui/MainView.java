@@ -22,4 +22,5 @@ public interface MainView {
     void dismissLoading();
 
     void openAddPowerlifterView();
+    void openVideoGallery();
 }

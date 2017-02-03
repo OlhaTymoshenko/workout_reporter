@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         if (id == R.id.action_add_lifter) {
             openAddPowerlifterView();
         } else if (id == R.id.action_open_gallery) {
-
+            openVideoGallery();
         } else if (id == R.id.action_sign_out) {
             showLoading();
             signOut();
@@ -245,6 +245,13 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public void openAddPowerlifterView() {
         Intent intent = new Intent(this, AddPowerlifterActivity.class);
         startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
+    }
+
+    @Override
+    public void openVideoGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("video/*");
+        startActivity(intent);
     }
 
     @Override
