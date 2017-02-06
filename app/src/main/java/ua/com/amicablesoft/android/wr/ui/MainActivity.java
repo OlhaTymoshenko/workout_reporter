@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) {
-                this.recreate();
                 mainPresenter.onAuthInSuccess();
             }
             if (resultCode == RESULT_CANCELED){
