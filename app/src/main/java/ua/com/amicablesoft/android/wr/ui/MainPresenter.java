@@ -36,6 +36,7 @@ class MainPresenter {
 
     void onStart() {
         view.showLoading();
+        onAuthInSuccess();
         repository = new Repository();
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override

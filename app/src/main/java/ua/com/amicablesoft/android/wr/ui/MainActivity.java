@@ -25,15 +25,12 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ui.ResultCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ua.com.amicablesoft.android.wr.R;
@@ -48,12 +45,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
-    private static final int RC_SIGN_IN = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -82,39 +79,12 @@ public class MainActivity extends AppCompatActivity implements MainView {
                 mainPresenter.onNewVideoAction();
             }
         });
-        if (isAuthenticated()) {
-            initPresenter();
-        } else {
-            startAuthActivity();
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (isAuthenticated()) {
-            initPresenter();
-        } else {
-            startAuthActivity();
-        }
+        initPresenter();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
-                mainPresenter.onAuthInSuccess();
-            }
-            if (resultCode == RESULT_CANCELED){
-                Snackbar.make(findViewById(R.id.activity_main),
-                        R.string.snackbar_text_sign_in_canceled, Snackbar.LENGTH_LONG).show();
-            }
-            if (resultCode == ResultCodes.RESULT_NO_NETWORK) {
-                Snackbar.make(findViewById(R.id.activity_main),
-                        R.string.snackbar_text_no_internet_connection, Snackbar.LENGTH_LONG).show();
-            }
-        }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
             if (resultCode == RESULT_OK) {
                 mainPresenter.onSnackbarVideoAction();
@@ -255,31 +225,16 @@ public class MainActivity extends AppCompatActivity implements MainView {
         }
     }
 
-    private void startAuthActivity() {
-        startActivityForResult(
-                AuthUI.getInstance().createSignInIntentBuilder()
-                        .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
-                        .setTheme(R.style.AppTheme)
-                        .setLogo(R.drawable.ic_icon)
-                        .build(),
-                RC_SIGN_IN);
-    }
-
     private void signOut() {
         AuthUI.getInstance().signOut(this).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                Intent intent = new Intent(MainActivity.this, StartActivity.class);
                 startActivity(intent);
                 dismissLoading();
+                finish();
             }
         });
-    }
-
-    private boolean isAuthenticated() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        return firebaseAuth.getCurrentUser() != null;
     }
 
     private void initPresenter() {
