@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">Workout Reporter</string>
     <string name="text_view_powerlifter">Powerlifter</string>
-    <string name="spinner_powerlifter">Powerlifter</string>
+    <string name="text_view_competition">Competition</string>
     <string name="text_view_exercise">Exercise</string>
+    <string name="spinner_powerlifter">Powerlifter</string>
     <string name="radio_button_squats">Squats</string>
     <string name="radio_button_bench_press">Bench press</string>
     <string name="radio_button_dead_lift">Dead lift</string>
@@ -19,6 +20,9 @@
     <string name="label_save_new_powerlifter">Save</string>
     <string name="edit_text_hint_name">Name</string>
     <string name="edit_text_hint_last_name">Last name</string>
+    <string name="edit_text_hint_competition">Enter competition</string>
+    <string name="button_ok">OK</string>
+    <string name="button_cancel">Cancel</string>
     <string name="error_required_field">This field is required</string>
     <string name="error_short_name">This name is too short</string>
     <string name="error_short_last_name">This last name is too short</string>

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
 /**
@@ -14,6 +15,8 @@ public interface MainView {
     void setExercise(Integer exercise);
     void setPowerlifter(int position);
     void setListPowerlifters(ArrayList<Powerlifter> list);
+    void setListCompetitions(ArrayList<Competition> listCompetitions);
+    void setCompetition(int position);
     void requestPermissions();
     void showSnackbar(int message);
     void recordVideo(File videoFile) throws IOException;
