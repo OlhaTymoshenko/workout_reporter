@@ -23,29 +23,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ui.ResultCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import ua.com.amicablesoft.android.wr.R;
+import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
 public class MainActivity extends AppCompatActivity implements MainView,
-        NavigationView.OnNavigationItemSelectedListener {
+        NavigationView.OnNavigationItemSelectedListener,
+        CompetitionDialogFragment.CompetitionDialogListener {
 
-    private Spinner spinner;
+    private Spinner spinnerPowerlifters;
+    private Spinner spinnerCompetitions;
     private MainPresenter mainPresenter;
     private File video;
     private DrawerLayout drawerLayout;
@@ -54,7 +55,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
-    private static final int RC_SIGN_IN = 123;
+
+    private final List<Powerlifter> powerlifters = new ArrayList<>();
+    private final List<Competition> competitions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,15 +74,33 @@ public class MainActivity extends AppCompatActivity implements MainView,
         drawerToggle.syncState();
         drawerToggle.setDrawerIndicatorEnabled(true);
 
-        spinner = (Spinner) findViewById(R.id.spinner);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerPowerlifters = (Spinner) findViewById(R.id.spinner_powerlifter);
+        spinnerPowerlifters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Powerlifter powerlifter = (Powerlifter) adapterView.getAdapter().getItem(i);
+                Powerlifter powerlifter = powerlifters.get(i);
                 mainPresenter.changePowerlifter(powerlifter);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+        spinnerCompetitions = (Spinner) findViewById(R.id.spinner_competition);
+        spinnerCompetitions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Competition competition = competitions.get(position);
+                String nameOfCompetition = competition.getCompetition();
+                if (nameOfCompetition.contentEquals("- Add new competition -")) {
+                    new CompetitionDialogFragment().show(getSupportFragmentManager(), "dialog");
+                } else {
+                    mainPresenter.changeCompetition(competition);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radio_group);
@@ -101,11 +122,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         });
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
-        if (isAuthenticated()) {
-            initPresenter();
-        } else {
-            startAuthActivity();
-        }
+        initPresenter();
     }
 
     @Override
@@ -132,16 +149,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (isAuthenticated()) {
-            initPresenter();
-        } else {
-            startAuthActivity();
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -154,20 +161,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
-                initPresenter();
-                mainPresenter.onAuthInSuccess();
-            }
-            if (resultCode == RESULT_CANCELED){
-                Snackbar.make(findViewById(R.id.activity_main),
-                        R.string.snackbar_text_sign_in_canceled, Snackbar.LENGTH_LONG).show();
-            }
-            if (resultCode == ResultCodes.RESULT_NO_NETWORK) {
-                Snackbar.make(findViewById(R.id.activity_main),
-                        R.string.snackbar_text_no_internet_connection, Snackbar.LENGTH_LONG).show();
-            }
-        }
         if (requestCode == REQUEST_VIDEO_CAPTURE) {
             if (resultCode == RESULT_OK) {
                 mainPresenter.onSnackbarVideoAction();
@@ -218,13 +211,30 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public void setListPowerlifters(ArrayList<Powerlifter> list) {
-        CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), R.layout.spinner_item, list);
-        spinner.setAdapter(customAdapter);
+        powerlifters.clear();
+        powerlifters.addAll(list);
+        List<String> powerlifterNames = powerlifterNames(powerlifters);
+        ArrayAdapter powerlifterAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, powerlifterNames);
+        spinnerPowerlifters.setAdapter(powerlifterAdapter);
+    }
+
+    @Override
+    public void setListCompetitions(ArrayList<Competition> listCompetitions) {
+        competitions.clear();
+        competitions.addAll(listCompetitions);
+        List<String> competitions = competitions(listCompetitions);
+        ArrayAdapter competitionAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, competitions);
+        spinnerCompetitions.setAdapter(competitionAdapter);
+    }
+
+    @Override
+    public void setCompetition(int position) {
+        spinnerCompetitions.setSelection(position);
     }
 
     @Override
     public void setPowerlifter(int position) {
-        spinner.setSelection(position);
+        spinnerPowerlifters.setSelection(position);
     }
 
     @Override
@@ -292,31 +302,16 @@ public class MainActivity extends AppCompatActivity implements MainView,
         }
     }
 
-    private void startAuthActivity() {
-        startActivityForResult(
-                AuthUI.getInstance().createSignInIntentBuilder()
-                        .setProviders(Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                                    new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
-                        .setTheme(R.style.AppTheme)
-                        .setLogo(R.drawable.ic_icon)
-                        .build(),
-                RC_SIGN_IN);
-    }
-
     private void signOut() {
         AuthUI.getInstance().signOut(this).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                Intent intent = new Intent(MainActivity.this, StartActivity.class);
                 startActivity(intent);
                 dismissLoading();
+                finish();
             }
         });
-    }
-
-    private boolean isAuthenticated() {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        return firebaseAuth.getCurrentUser() != null;
     }
 
     private void initPresenter() {
@@ -336,6 +331,27 @@ public class MainActivity extends AppCompatActivity implements MainView,
             exercise = 2;
         }
         return exercise;
+    }
+
+    private List<String> powerlifterNames(List<Powerlifter> powerlifters) {
+        List<String> names = new ArrayList<>();
+        for (Powerlifter p : powerlifters) {
+            names.add(p.getLastName() + " " + p.getName());
+        }
+        return names;
+    }
+
+    private List<String> competitions(List<Competition> competitions) {
+        List<String> listCompetitions = new ArrayList<>();
+        for (Competition c : competitions) {
+            listCompetitions.add(c.getCompetition());
+        }
+        return listCompetitions;
+    }
+
+    @Override
+    public void onOkButtonClick(String competition) {
+        mainPresenter.callWriteNewCompetition(competition);
     }
 }
 
