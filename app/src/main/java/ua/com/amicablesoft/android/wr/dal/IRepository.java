@@ -2,6 +2,7 @@ package ua.com.amicablesoft.android.wr.dal;
 
 import java.util.ArrayList;
 
+import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 import ua.com.amicablesoft.android.wr.models.User;
 
@@ -19,9 +20,20 @@ public interface IRepository {
         void onDataNotAvailable();
     }
 
-    void writeNewPowerlifter(String name, String lastName);
+    interface LoadCompetitionsCallback {
+        void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList);
+        void onDataNotAvailable();
+    }
 
+    interface AddCompetitionCallback {
+        void onCompetitionAddedSuccess();
+    }
+
+    void writeNewPowerlifter(String name, String lastName);
     void getPowerlifters(LoadPowerliftersCallback loadPowerliftersCallback);
+
+    void writeNewCompetition(String competition, AddCompetitionCallback addCompetitionCallback);
+    void getCompetitions(LoadCompetitionsCallback loadCompetitionsCallback);
 
     void userExist(User user, LoadUserCallback loadUserCallback);
     void userSave(User user);

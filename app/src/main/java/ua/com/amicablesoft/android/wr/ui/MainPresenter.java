@@ -14,6 +14,7 @@ import java.util.Locale;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.dal.IRepository;
 import ua.com.amicablesoft.android.wr.dal.Repository;
+import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Exercise;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 import ua.com.amicablesoft.android.wr.models.User;
@@ -26,6 +27,7 @@ class MainPresenter {
 
     private final MainView view;
     private Powerlifter currentPowerlifter;
+    private Competition currentCompetition;
     private Exercise currentExercise;
     private Repository repository;
     private File currentVideoPath;
@@ -53,7 +55,22 @@ class MainPresenter {
                 view.dismissLoading();
             }
         });
+        repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
+            @Override
+            public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
+                Competition competition = new Competition();
+                competition.setCompetition("- Add new competition -");
+                competitionArrayList.add(competition);
+                view.setListCompetitions(competitionArrayList);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
         view.setPowerlifter(0);
+        view.setCompetition(0);
         view.setExercise(1);
         currentExercise = Exercise.BenchPress;
     }
@@ -73,8 +90,30 @@ class MainPresenter {
         view.setPowerlifter(0);
     }
 
+    private void onCompetitionAdded() {
+        repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
+            @Override
+            public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
+                Competition competition = new Competition();
+                competition.setCompetition("- Add new competition -");
+                competitionArrayList.add(competition);
+                view.setListCompetitions(competitionArrayList);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+        view.setCompetition(0);
+    }
+
     void changePowerlifter(Powerlifter powerlifter) {
         currentPowerlifter = powerlifter;
+    }
+
+    void changeCompetition(Competition competition) {
+        currentCompetition = competition;
     }
 
     void changeExercise(Integer exercise) {
@@ -87,6 +126,15 @@ class MainPresenter {
         }
     }
 
+    void callWriteNewCompetition(String competition) {
+        repository.writeNewCompetition(competition, new IRepository.AddCompetitionCallback() {
+            @Override
+            public void onCompetitionAddedSuccess() {
+                onCompetitionAdded();
+            }
+        });
+    }
+
     private String createVideoFileName() throws IOException {
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         String name = getPowerlifterName();
@@ -97,10 +145,15 @@ class MainPresenter {
 
     private String createDirName() {
         if (currentPowerlifter != null) {
+            String competition = currentCompetition.getCompetition();
             String powerlifterName = currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
             String exercise = currentExercise.toString();
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            return "/" + powerlifterName + "/" + exercise + "/" + date + "/";
+            if (!competition.contentEquals("- None -")) {
+                return "/" + competition + "/" + powerlifterName + "/" + exercise + "/" + date + "/";
+            } else {
+                return "/" + powerlifterName + "/" + exercise + "/" + date + "/";
+            }
         } else {
             view.showSnackbar(R.string.snackbar_text_powerlifter);
             return null;
@@ -117,7 +170,7 @@ class MainPresenter {
         return new File(videoPath, fileName);
     }
 
-    void onAuthInSuccess() {
+    private void onAuthInSuccess() {
         final Repository repository = new Repository();
         FirebaseAuth auth = FirebaseAuth.getInstance();
         final User user = new User(auth.getCurrentUser().getUid(), auth.getCurrentUser().getEmail());
