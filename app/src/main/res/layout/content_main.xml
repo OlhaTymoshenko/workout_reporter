@@ -24,7 +24,22 @@
         android:text="@string/text_view_powerlifter"/>
 
     <Spinner
-        android:id="@+id/spinner"
+        android:id="@+id/spinner_powerlifter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/common_margin">
+    </Spinner>
+
+    <TextView
+        android:id="@+id/text_view_competition"
+        style="@style/TextViewFont"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/common_margin"
+        android:text="@string/text_view_competition"/>
+
+    <Spinner
+        android:id="@+id/spinner_competition"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/common_margin">
