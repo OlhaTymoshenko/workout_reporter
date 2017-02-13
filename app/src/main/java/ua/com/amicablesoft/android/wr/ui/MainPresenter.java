@@ -58,6 +58,9 @@ class MainPresenter {
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
             public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
+                Competition competition = new Competition();
+                competition.setCompetition("- Add new competition -");
+                competitionArrayList.add(competition);
                 view.setListCompetitions(competitionArrayList);
             }
 
@@ -91,6 +94,9 @@ class MainPresenter {
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
             public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
+                Competition competition = new Competition();
+                competition.setCompetition("- Add new competition -");
+                competitionArrayList.add(competition);
                 view.setListCompetitions(competitionArrayList);
             }
 

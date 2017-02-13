@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -75,7 +74,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Competition competition = competitions.get(position);
-                mainPresenter.changeCompetition(competition);
+                String nameOfCompetition = competition.getCompetition();
+                if (nameOfCompetition.contentEquals("- Add new competition -")) {
+                    new CompetitionDialogFragment().show(getSupportFragmentManager(), "dialog");
+                } else {
+                    mainPresenter.changeCompetition(competition);
+                }
             }
 
             @Override
@@ -98,13 +102,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
             @Override
             public void onClick(View view) {
                 mainPresenter.onNewVideoAction();
-            }
-        });
-        ImageView imageView = (ImageView) findViewById(R.id.image_view_add_competition);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new CompetitionDialogFragment().show(getSupportFragmentManager(), "dialog");
             }
         });
         initPresenter();
