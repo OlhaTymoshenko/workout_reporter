@@ -105,6 +105,9 @@ public class Repository implements IRepository {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         ArrayList<Competition> competitions = new ArrayList<>();
+                        Competition c = new Competition();
+                        c.setCompetition("- None -");
+                        competitions.add(c);
                         for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
                             Competition competition = snapshot.getValue(Competition.class);
                             competitions.add(competition);

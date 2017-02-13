@@ -87,7 +87,7 @@ class MainPresenter {
         view.setPowerlifter(0);
     }
 
-    void onCompetitionAdded() {
+    private void onCompetitionAdded() {
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
             public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
@@ -139,10 +139,15 @@ class MainPresenter {
 
     private String createDirName() {
         if (currentPowerlifter != null) {
+            String competition = currentCompetition.getCompetition();
             String powerlifterName = currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
             String exercise = currentExercise.toString();
             String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-            return "/" + powerlifterName + "/" + exercise + "/" + date + "/";
+            if (!competition.contentEquals("- None -")) {
+                return "/" + competition + "/" + powerlifterName + "/" + exercise + "/" + date + "/";
+            } else {
+                return "/" + powerlifterName + "/" + exercise + "/" + date + "/";
+            }
         } else {
             view.showSnackbar(R.string.snackbar_text_powerlifter);
             return null;
