@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.processing;
 
 import android.app.Dialog;
 import android.app.DialogFragment;

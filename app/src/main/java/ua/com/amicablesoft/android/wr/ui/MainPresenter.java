@@ -55,22 +55,8 @@ class MainPresenter {
                 view.dismissLoading();
             }
         });
-        repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
-            @Override
-            public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
-                Competition competition = new Competition();
-                competition.setCompetition("- Add new competition -");
-                competitionArrayList.add(competition);
-                view.setListCompetitions(competitionArrayList);
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
+        getCompetitionsFromRepository();
         view.setPowerlifter(0);
-        view.setCompetition(0);
         view.setExercise(1);
         currentExercise = Exercise.BenchPress;
     }
@@ -91,24 +77,14 @@ class MainPresenter {
     }
 
     private void onCompetitionAdded() {
-        repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
-            @Override
-            public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
-                Competition competition = new Competition();
-                competition.setCompetition("- Add new competition -");
-                competitionArrayList.add(competition);
-                view.setListCompetitions(competitionArrayList);
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
-        view.setCompetition(0);
+        getCompetitionsFromRepository();
     }
 
-    public void getCompetitions() {
+    void getCompetitions() {
+        getCompetitionsFromRepository();
+    }
+
+    private void getCompetitionsFromRepository() {
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
             public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {

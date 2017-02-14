@@ -40,24 +40,24 @@ import java.util.List;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment;
 
 public class MainActivity extends AppCompatActivity implements MainView,
         NavigationView.OnNavigationItemSelectedListener,
         CompetitionDialogFragment.CompetitionDialogListener {
 
+    private MainPresenter mainPresenter;
     private Spinner spinnerPowerlifters;
     private Spinner spinnerCompetitions;
-    private MainPresenter mainPresenter;
-    private File video;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private File video;
+    private final List<Powerlifter> powerlifters = new ArrayList<>();
+    private final List<Competition> competitions = new ArrayList<>();
     private static final int DIALOG_ID = 3;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
-
-    private final List<Powerlifter> powerlifters = new ArrayList<>();
-    private final List<Competition> competitions = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,10 +97,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
                     mainPresenter.changeCompetition(competition);
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radio_group);
@@ -142,10 +140,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -156,6 +151,16 @@ public class MainActivity extends AppCompatActivity implements MainView,
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onOkButtonClick(String competition) {
+        mainPresenter.callWriteNewCompetition(competition);
+    }
+
+    @Override
+    public void onCancelButtonClick() {
+        mainPresenter.getCompetitions();
     }
 
     @Override
@@ -173,6 +178,20 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 mainPresenter.onPowerlifterAdded();
             }
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            try {
+                mainPresenter.createVideo();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mainPresenter.onSnackbarPermissions();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -196,91 +215,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            try {
-                mainPresenter.createVideo();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            mainPresenter.onSnackbarPermissions();
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
-    public void setListPowerlifters(ArrayList<Powerlifter> list) {
-        powerlifters.clear();
-        powerlifters.addAll(list);
-        List<String> powerlifterNames = powerlifterNames(powerlifters);
-        ArrayAdapter powerlifterAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, powerlifterNames);
-        spinnerPowerlifters.setAdapter(powerlifterAdapter);
-    }
-
-    @Override
-    public void setListCompetitions(ArrayList<Competition> listCompetitions) {
-        competitions.clear();
-        competitions.addAll(listCompetitions);
-        List<String> competitions = competitions(listCompetitions);
-        ArrayAdapter competitionAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, competitions);
-        spinnerCompetitions.setAdapter(competitionAdapter);
-    }
-
-    @Override
-    public void setCompetition(int position) {
-        spinnerCompetitions.setSelection(position);
-    }
-
-    @Override
-    public void setPowerlifter(int position) {
-        spinnerPowerlifters.setSelection(position);
-    }
-
-    @Override
-    public void setExercise(Integer exercise) {
-        if (exercise == 0) {
-            RadioButton radioButtonSquats = (RadioButton) findViewById(R.id.radio_button_squats);
-            radioButtonSquats.setChecked(true);
-        } else if (exercise == 1) {
-            RadioButton radioButtonBenchPress = (RadioButton) findViewById(R.id.radio_button_bench_press);
-            radioButtonBenchPress.setChecked(true);
-        } else if (exercise == 2) {
-            RadioButton radioButtonDeadLift = (RadioButton) findViewById(R.id.radio_button_dead_lift);
-            radioButtonDeadLift.setChecked(true);
-        }
-    }
-
-    @Override
-    public void openAddPowerlifterView() {
-        Intent intent = new Intent(this, AddPowerlifterActivity.class);
-        startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
-    }
-
-    @Override
-    public void openVideoGallery() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("video/*");
-        startActivity(intent);
-    }
-
-    @Override
-    public void showLoading() {
-        CommonProcessDialogFragment.show(this.getFragmentManager(), DIALOG_ID);
-    }
-
-    @Override
-    public void dismissLoading() {
-        CommonProcessDialogFragment.dismiss(this.getFragmentManager(), DIALOG_ID);
-    }
-
-    @Override
-    public void showSnackbar(int message) {
-        Snackbar.make(findViewById(R.id.activity_main), message,
-                Snackbar.LENGTH_LONG).show();
-    }
-
-    @Override
     public void recordVideo(File videoFile) throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
@@ -300,6 +234,79 @@ public class MainActivity extends AppCompatActivity implements MainView,
             intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
             startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
+    }
+
+    @Override
+    public void setListPowerlifters(ArrayList<Powerlifter> list) {
+        powerlifters.clear();
+        powerlifters.addAll(list);
+        List<String> powerlifterNames = powerlifterNames(powerlifters);
+        ArrayAdapter powerlifterAdapter =
+                new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, powerlifterNames);
+        spinnerPowerlifters.setAdapter(powerlifterAdapter);
+    }
+
+    @Override
+    public void setListCompetitions(ArrayList<Competition> listCompetitions) {
+        competitions.clear();
+        competitions.addAll(listCompetitions);
+        List<String> competitions = competitions(listCompetitions);
+        ArrayAdapter competitionAdapter =
+                new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, competitions);
+        spinnerCompetitions.setAdapter(competitionAdapter);
+    }
+
+    @Override
+    public void setPowerlifter(int position) {
+        spinnerPowerlifters.setSelection(position);
+    }
+
+    @Override
+    public void setCompetition(int position) {
+        spinnerCompetitions.setSelection(position);
+    }
+
+    @Override
+    public void setExercise(Integer exercise) {
+        if (exercise == 0) {
+            RadioButton radioButtonSquats = (RadioButton) findViewById(R.id.radio_button_squats);
+            radioButtonSquats.setChecked(true);
+        } else if (exercise == 1) {
+            RadioButton radioButtonBenchPress = (RadioButton) findViewById(R.id.radio_button_bench_press);
+            radioButtonBenchPress.setChecked(true);
+        } else if (exercise == 2) {
+            RadioButton radioButtonDeadLift = (RadioButton) findViewById(R.id.radio_button_dead_lift);
+            radioButtonDeadLift.setChecked(true);
+        }
+    }
+
+    @Override
+    public void showSnackbar(int message) {
+        Snackbar.make(findViewById(R.id.activity_main), message,
+                Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showLoading() {
+        CommonProcessDialogFragment.show(this.getFragmentManager(), DIALOG_ID);
+    }
+
+    @Override
+    public void dismissLoading() {
+        CommonProcessDialogFragment.dismiss(this.getFragmentManager(), DIALOG_ID);
+    }
+
+    @Override
+    public void openAddPowerlifterView() {
+        Intent intent = new Intent(this, AddPowerlifterActivity.class);
+        startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
+    }
+
+    @Override
+    public void openVideoGallery() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("video/*");
+        startActivity(intent);
     }
 
     private void signOut() {
@@ -347,16 +354,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
             listCompetitions.add(c.getCompetition());
         }
         return listCompetitions;
-    }
-
-    @Override
-    public void onOkButtonClick(String competition) {
-        mainPresenter.callWriteNewCompetition(competition);
-    }
-
-    @Override
-    public void onCancelButtonClick() {
-        mainPresenter.getCompetitions();
     }
 }
 
