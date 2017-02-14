@@ -29,12 +29,12 @@ public interface IRepository {
         void onCompetitionAddedSuccess();
     }
 
+    void userExist(User user, LoadUserCallback loadUserCallback);
+    void userSave(User user);
+
     void writeNewPowerlifter(String name, String lastName);
     void getPowerlifters(LoadPowerliftersCallback loadPowerliftersCallback);
 
     void writeNewCompetition(String competition, AddCompetitionCallback addCompetitionCallback);
     void getCompetitions(LoadCompetitionsCallback loadCompetitionsCallback);
-
-    void userExist(User user, LoadUserCallback loadUserCallback);
-    void userSave(User user);
 }

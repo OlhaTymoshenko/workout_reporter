@@ -25,11 +25,38 @@ import ua.com.amicablesoft.android.wr.models.User;
 
 public class Repository implements IRepository {
 
+    private DatabaseReference firebaseDatabase;
+    private FirebaseAuth firebaseAuth;
+
+    @Override
+    public void userExist(final User user, final LoadUserCallback loadUserCallback) {
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        firebaseDatabase.child("users").child(user.getId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        loadUserCallback.found(dataSnapshot.exists());
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        // TODO error
+                        loadUserCallback.found(false);
+                    }
+                }
+        );
+    }
+
+    @Override
+    public void userSave(User user) {
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        firebaseDatabase.child("users").child(user.getId()).setValue(new UserDto(user.getEmail()));
+    }
+
     @Override
     public void writeNewPowerlifter(String name, String lastName) {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference firebaseDatabase = getDatabaseReference();
+        String userId = getUserId();
         String key = firebaseDatabase.child("users/" + userId + "/powerlifters").push().getKey();
         Powerlifter powerlifter = new Powerlifter();
         powerlifter.setName(name);
@@ -40,22 +67,10 @@ public class Repository implements IRepository {
 
     }
 
-//    @Override
-//    public void writeNewUser() {
-//        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-//        String userId = firebaseAuth.getCurrentUser().getUid();
-//        String userEmail = firebaseAuth.getCurrentUser().getEmail();
-//        assert userEmail != null;
-//        User user = new User(userEmail);
-//        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-//        firebaseDatabase.child("users").child(userId).setValue(user);
-//    }
-
     @Override
     public void getPowerlifters(final LoadPowerliftersCallback loadPowerliftersCallback) {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference firebaseDatabase = getDatabaseReference();
+        String userId = getUserId();
         firebaseDatabase.child("users/" + userId + "/powerlifters").addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -79,9 +94,8 @@ public class Repository implements IRepository {
 
     @Override
     public void writeNewCompetition(String nameOfCompetition, final AddCompetitionCallback addCompetitionCallback) {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference firebaseDatabase = getDatabaseReference();
+        String userId = getUserId();
         String key = firebaseDatabase.child("users/" + userId + "/competitions").push().getKey();
         Competition competition = new Competition();
         competition.setCompetition(nameOfCompetition);
@@ -97,9 +111,8 @@ public class Repository implements IRepository {
 
     @Override
     public void getCompetitions(final LoadCompetitionsCallback loadCompetitionsCallback) {
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        String userId = firebaseAuth.getCurrentUser().getUid();
-        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference firebaseDatabase = getDatabaseReference();
+        String userId = getUserId();
         firebaseDatabase.child("users/" + userId + "/competitions").addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -124,28 +137,12 @@ public class Repository implements IRepository {
         );
     }
 
-    @Override
-    public void userExist(final User user, final LoadUserCallback loadUserCallback) {
-        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        firebaseDatabase.child("users").child(user.getId()).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        loadUserCallback.found(dataSnapshot.exists());
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        // TODO error
-                        loadUserCallback.found(false);
-                    }
-                }
-        );
+    private DatabaseReference getDatabaseReference() {
+        firebaseAuth = FirebaseAuth.getInstance();
+        return FirebaseDatabase.getInstance().getReference();
     }
 
-    @Override
-    public void userSave(User user) {
-        DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        firebaseDatabase.child("users").child(user.getId()).setValue(new UserDto(user.getEmail()));
+    private String getUserId() {
+        return firebaseAuth.getCurrentUser().getUid();
     }
 }
