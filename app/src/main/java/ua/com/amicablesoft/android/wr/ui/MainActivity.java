@@ -353,6 +353,11 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public void onOkButtonClick(String competition) {
         mainPresenter.callWriteNewCompetition(competition);
     }
+
+    @Override
+    public void onCancelButtonClick() {
+        mainPresenter.getCompetitions();
+    }
 }
 
 

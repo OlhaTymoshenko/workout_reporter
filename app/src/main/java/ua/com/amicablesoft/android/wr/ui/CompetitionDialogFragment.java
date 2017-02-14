@@ -21,6 +21,7 @@ public class CompetitionDialogFragment extends DialogFragment {
 
     public interface CompetitionDialogListener {
         void onOkButtonClick (String competition);
+        void onCancelButtonClick();
     }
 
     @Override
@@ -45,6 +46,7 @@ public class CompetitionDialogFragment extends DialogFragment {
                 .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        listener.onCancelButtonClick();
                         dismissAllowingStateLoss();
                     }
                 });

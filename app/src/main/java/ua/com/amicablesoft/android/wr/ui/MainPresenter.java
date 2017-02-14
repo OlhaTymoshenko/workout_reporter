@@ -108,6 +108,24 @@ class MainPresenter {
         view.setCompetition(0);
     }
 
+    public void getCompetitions() {
+        repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
+            @Override
+            public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
+                Competition competition = new Competition();
+                competition.setCompetition("- Add new competition -");
+                competitionArrayList.add(competition);
+                view.setListCompetitions(competitionArrayList);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+        view.setCompetition(0);
+    }
+
     void changePowerlifter(Powerlifter powerlifter) {
         currentPowerlifter = powerlifter;
     }
