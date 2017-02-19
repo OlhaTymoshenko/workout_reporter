@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/common_margin"
-        android:text="@string/text_view_powerlifter"/>
+        android:text="@string/title_powerlifter"/>
 
     <Spinner
         android:id="@+id/spinner_powerlifter"
@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/common_margin"
-        android:text="@string/text_view_competition"/>
+        android:text="@string/title_competition"/>
 
     <Spinner
         android:id="@+id/spinner_competition"
@@ -51,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/common_margin"
-        android:text="@string/text_view_exercise"/>
+        android:text="@string/title_exercise"/>
 
     <RadioGroup
         android:id="@+id/radio_group"
@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/common_margin"
-            android:text="@string/radio_button_squats"/>
+            android:text="@string/title_squats"/>
 
         <RadioButton
             android:id="@+id/radio_button_bench_press"
@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/common_margin"
-            android:text="@string/radio_button_bench_press"/>
+            android:text="@string/title_bench_press"/>
 
         <RadioButton
             android:id="@+id/radio_button_dead_lift"
@@ -81,6 +81,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/common_margin"
-            android:text="@string/radio_button_dead_lift"/>
+            android:text="@string/title_dead_lift"/>
     </RadioGroup>
 </LinearLayout>
