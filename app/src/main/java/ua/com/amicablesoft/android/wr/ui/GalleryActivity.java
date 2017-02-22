@@ -5,7 +5,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,19 +18,28 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
+import rx.Observable;
+import rx.Observer;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 
 public class GalleryActivity extends AppCompatActivity implements GalleryView {
 
+    private static final String TAG = GalleryActivity.class.getSimpleName();
     private GalleryPresenter galleryPresenter;
     private DrawerLayout drawer;
-    private ListView rightDrawer;
     private Spinner spinner;
     private final List<Powerlifter> powerlifters = new ArrayList<>();
+    private GalleryAdapter galleryAdapter;
+    private Subscription subscription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +69,8 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
                 }
             }
         });
-        rightDrawer = (ListView) findViewById(R.id.right_drawer);
-        galleryPresenter = new GalleryPresenter(this);
+        ListView rightDrawer = (ListView) findViewById(R.id.right_drawer);
+        galleryPresenter = new GalleryPresenter(this, getApplicationContext());
         List<String> items = galleryPresenter.getCompetitions(getApplicationContext());
         final DrawerAdapter drawerAdapter = new DrawerAdapter(getApplicationContext(), items);
         drawerAdapter.setButtonClickListener(new DrawerAdapter.ButtonClickListener() {
@@ -73,7 +85,9 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                Powerlifter powerlifter = powerlifters.get(position);
+                galleryPresenter.setCurrentPowerlifter(powerlifter);
+                createObservable();
             }
 
             @Override
@@ -82,6 +96,20 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
             }
         });
         galleryPresenter.setPowerlifters();
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        galleryAdapter = new GalleryAdapter(getApplicationContext(), galleryPresenter);
+        recyclerView.setAdapter(galleryAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (subscription != null && !subscription.isUnsubscribed()) {
+            subscription.unsubscribe();
+        }
     }
 
     @Override
@@ -124,5 +152,35 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
             names.add(p.getLastName() + " " + p.getName());
         }
         return names;
+    }
+
+    private void createObservable() {
+        Observable<List<File>> listObservable = Observable.fromCallable(new Callable<List<File>>() {
+            @Override
+            public List<File> call() {
+                return galleryPresenter.getListThumbnails();
+            }
+        });
+
+        subscription = listObservable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        new Observer<List<File>>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Log.e(TAG, "Error", e);
+                            }
+
+                            @Override
+                            public void onNext(List<File> thumbnails) {
+                                galleryAdapter.setThumbnailsList(thumbnails);
+                            }
+                        });
     }
 }

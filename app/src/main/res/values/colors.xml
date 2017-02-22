@@ -8,4 +8,5 @@
     <color name="colorText">#FFFFFF</color>
     <color name="colorLightPrimary">#CFD8DC</color>
     <color name="colorItemCommonNormal">@android:color/transparent</color>
+    <color name="colorCardBackground">#cf757575</color>
 </resources>
