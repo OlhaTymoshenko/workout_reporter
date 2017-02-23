@@ -39,6 +39,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
     private Spinner spinner;
     private final List<Powerlifter> powerlifters = new ArrayList<>();
     private GalleryAdapter galleryAdapter;
+    private DrawerAdapter drawerAdapter;
     private Subscription subscription;
 
     @Override
@@ -71,8 +72,8 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         });
         ListView rightDrawer = (ListView) findViewById(R.id.right_drawer);
         galleryPresenter = new GalleryPresenter(this, getApplicationContext());
-        List<String> items = galleryPresenter.getCompetitions(getApplicationContext());
-        final DrawerAdapter drawerAdapter = new DrawerAdapter(getApplicationContext(), items);
+        drawerAdapter = new DrawerAdapter(getApplicationContext());
+        galleryPresenter.getCompetitions(getApplicationContext());
         drawerAdapter.setButtonClickListener(new DrawerAdapter.ButtonClickListener() {
             @Override
             public void onButtonClick() {
@@ -144,6 +145,11 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
     @Override
     public void setPowerlifter(int position) {
         spinner.setSelection(position);
+    }
+
+    @Override
+    public void setListItems(ArrayList<String> items) {
+        drawerAdapter.setListItems(items);
     }
 
     private List<String> getPowerlifterNames(List<Powerlifter> powerlifters) {

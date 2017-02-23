@@ -51,21 +51,22 @@ class GalleryPresenter {
         view.setPowerlifter(0);
     }
 
-    List<String> getCompetitions(final Context context) {
+    void getCompetitions(final Context context) {
         repository = new Repository();
-        final List<String> listItems = new ArrayList<>();
-        listItems.add(context.getString(R.string.title_exercise));
-        listItems.add(context.getString(R.string.title_squats));
-        listItems.add(context.getString(R.string.title_bench_press));
-        listItems.add(context.getString(R.string.title_dead_lift));
-        listItems.add(context.getString(R.string.title_competition));
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
             public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
+                ArrayList<String> listItems = new ArrayList<>();
+                listItems.add(context.getString(R.string.title_exercise));
+                listItems.add(context.getString(R.string.title_squats));
+                listItems.add(context.getString(R.string.title_bench_press));
+                listItems.add(context.getString(R.string.title_dead_lift));
+                listItems.add(context.getString(R.string.title_competition));
                 for (Competition c : competitionArrayList) {
                     listItems.add(c.getCompetition());
                 }
                 listItems.add(context.getString(R.string.button_show));
+                view.setListItems(listItems);
             }
 
             @Override
@@ -73,7 +74,6 @@ class GalleryPresenter {
 
             }
         });
-        return listItems;
     }
 
     void setCurrentPowerlifter (Powerlifter powerlifter) {

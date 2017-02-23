@@ -30,13 +30,12 @@ class DrawerAdapter extends BaseAdapter {
     private static final int RADIO_BUTTON = 2;
     private static final int BUTTON = 3;
     private static final int COUNT = 4;
-    private List<String> items;
+    private List<String> items = new ArrayList<>();
     private LayoutInflater layoutInflater;
     private List<RadioButton> radioButtons = new ArrayList<>();
     private ButtonClickListener buttonClickListener;
 
-    DrawerAdapter(Context context, List<String> items) {
-        this.items = items;
+    DrawerAdapter(Context context) {
         layoutInflater = (LayoutInflater.from(context));
     }
 
@@ -132,6 +131,12 @@ class DrawerAdapter extends BaseAdapter {
 
     void setButtonClickListener(ButtonClickListener buttonClickListener) {
         this.buttonClickListener = buttonClickListener;
+    }
+
+    void setListItems(List<String> items) {
+        this.items.clear();
+        this.items.addAll(items);
+        notifyDataSetChanged();
     }
 
     private static class ViewHolder {
