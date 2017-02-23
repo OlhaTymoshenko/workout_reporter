@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -30,6 +29,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 public class GalleryActivity extends AppCompatActivity implements GalleryView {
 
@@ -100,7 +100,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(gridLayoutManager);
-        galleryAdapter = new GalleryAdapter(getApplicationContext(), galleryPresenter);
+        galleryAdapter = new GalleryAdapter(getApplicationContext());
         recyclerView.setAdapter(galleryAdapter);
     }
 
@@ -155,10 +155,10 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
     }
 
     private void createObservable() {
-        Observable<List<File>> listObservable = Observable.fromCallable(new Callable<List<File>>() {
+        Observable<List<VideoFile>> listObservable = Observable.fromCallable(new Callable<List<VideoFile>>() {
             @Override
-            public List<File> call() {
-                return galleryPresenter.getListThumbnails();
+            public List<VideoFile> call() {
+                return galleryPresenter.getListVideoFiles();
             }
         });
 
@@ -166,7 +166,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        new Observer<List<File>>() {
+                        new Observer<List<VideoFile>>() {
                             @Override
                             public void onCompleted() {
 
@@ -178,8 +178,8 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
                             }
 
                             @Override
-                            public void onNext(List<File> thumbnails) {
-                                galleryAdapter.setThumbnailsList(thumbnails);
+                            public void onNext(List<VideoFile> videoFiles) {
+                                galleryAdapter.setVideoFilesList(videoFiles);
                             }
                         });
     }

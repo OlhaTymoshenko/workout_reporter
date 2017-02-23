@@ -18,6 +18,7 @@ import ua.com.amicablesoft.android.wr.dal.IRepository;
 import ua.com.amicablesoft.android.wr.dal.Repository;
 import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 /**
  * Created by olha on 2/16/17.
@@ -83,30 +84,32 @@ class GalleryPresenter {
         return currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
     }
 
-    List<File> getListThumbnails() {
-        List<File> listThumbnails = new ArrayList<>();
+    List<VideoFile> getListVideoFiles() {
+        List<VideoFile> videoFiles = new ArrayList<>();
         File parentDir =
                 new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString()
                         + "/" + getCurrentPowerlifterName() + "/");
-        List<File> files = getListFiles(parentDir);
-        for (File file: files) {
-            String fileName = file.getName();
+        List<File> videos = getListFiles(parentDir);
+        for (File video: videos) {
+            String fileName = video.getName();
             String thumbName = fileName.substring(0, fileName.length() - 4);
             String path = context.getExternalCacheDir().toString();
             File thumb = new File(path, thumbName + ".png");
             if (thumb.exists()) {
-                listThumbnails.add(thumb);
+                VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
+                videoFiles.add(videoFile);
             } else {
                 try {
                     thumb.createNewFile();
                 } catch (IOException e) {
                     Log.e(TAG, "Error", e);
                 }
-                thumb = createThumbnailFromFile(file, thumb);
-                listThumbnails.add(thumb);
+                thumb = createThumbnailFromFile(video, thumb);
+                VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
+                videoFiles.add(videoFile);
             }
         }
-        return listThumbnails;
+        return videoFiles;
     }
 
     private List<File> getListFiles(File parentDir) {
@@ -144,12 +147,4 @@ class GalleryPresenter {
         }
         return thumb;
     }
-
-//    String getVideoPath(String fileName) {
-//        String videoName = fileName.replace(".png", ".mp4");
-//        File file = new File(videoName);
-//        int index = listFiles.indexOf(file);
-//        File video = listFiles.get(index);
-//        return video.getPath();
-//    }
 }

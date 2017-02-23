@@ -34,6 +34,7 @@
                     android:id="@+id/card_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minHeight="40dp"
                     android:layout_margin="@dimen/small_margin"
                     style="@style/CardFont"/>
             </RelativeLayout>
