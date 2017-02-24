@@ -14,4 +14,7 @@ interface GalleryView {
     void setPowerlifter(int position);
 
     void setListItems(ArrayList<String> items);
+
+    void showLoading();
+    void dismissLoading();
 }

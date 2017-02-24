@@ -30,14 +30,16 @@ import rx.schedulers.Schedulers;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
+import ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment;
 
 public class GalleryActivity extends AppCompatActivity implements GalleryView {
 
     private static final String TAG = GalleryActivity.class.getSimpleName();
+    private static final int DIALOG_ID = 3;
+    private final List<Powerlifter> powerlifters = new ArrayList<>();
     private GalleryPresenter galleryPresenter;
     private DrawerLayout drawer;
     private Spinner spinner;
-    private final List<Powerlifter> powerlifters = new ArrayList<>();
     private GalleryAdapter galleryAdapter;
     private DrawerAdapter drawerAdapter;
     private Subscription subscription;
@@ -152,6 +154,16 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         drawerAdapter.setListItems(items);
     }
 
+    @Override
+    public void showLoading() {
+        CommonProcessDialogFragment.show(this.getFragmentManager(), DIALOG_ID);
+    }
+
+    @Override
+    public void dismissLoading() {
+        CommonProcessDialogFragment.dismiss(this.getFragmentManager(), DIALOG_ID);
+    }
+
     private List<String> getPowerlifterNames(List<Powerlifter> powerlifters) {
         List<String> names = new ArrayList<>();
         for (Powerlifter p : powerlifters) {
@@ -161,6 +173,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
     }
 
     private void createObservable() {
+        showLoading();
         Observable<List<VideoFile>> listObservable = Observable.fromCallable(new Callable<List<VideoFile>>() {
             @Override
             public List<VideoFile> call() {
@@ -186,6 +199,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
                             @Override
                             public void onNext(List<VideoFile> videoFiles) {
                                 galleryAdapter.setVideoFilesList(videoFiles);
+                                dismissLoading();
                             }
                         });
     }
