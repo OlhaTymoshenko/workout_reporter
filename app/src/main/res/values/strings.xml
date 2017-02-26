@@ -5,6 +5,7 @@
     <string name="title_powerlifter">Powerlifter</string>
     <string name="title_competition">Competition</string>
     <string name="title_exercise">Exercise</string>
+    <string name="title_empty_view">Nothing to show</string>
     <string name="spinner_powerlifter">Powerlifter</string>
     <string name="title_squats">Squats</string>
     <string name="title_bench_press">Bench press</string>

@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
     private Spinner spinner;
     private GalleryAdapter galleryAdapter;
     private DrawerAdapter drawerAdapter;
+    private RecyclerView recyclerView;
     private Subscription subscription;
 
     @Override
@@ -101,7 +103,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         galleryPresenter.setPowerlifters();
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(gridLayoutManager);
         galleryAdapter = new GalleryAdapter(getApplicationContext());
         recyclerView.setAdapter(galleryAdapter);
@@ -198,7 +200,15 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
 
                             @Override
                             public void onNext(List<VideoFile> videoFiles) {
-                                galleryAdapter.setVideoFilesList(videoFiles);
+                                TextView textView = (TextView) findViewById(R.id.empty_view);
+                                if (videoFiles == null) {
+                                    textView.setVisibility(View.VISIBLE);
+                                    recyclerView.setVisibility(View.GONE);
+                                } else {
+                                    textView.setVisibility(View.GONE);
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    galleryAdapter.setVideoFilesList(videoFiles);
+                                }
                                 dismissLoading();
                             }
                         });

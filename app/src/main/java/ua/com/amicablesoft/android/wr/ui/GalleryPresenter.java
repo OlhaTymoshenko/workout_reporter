@@ -90,37 +90,45 @@ class GalleryPresenter {
                 new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString()
                         + "/" + getCurrentPowerlifterName() + "/");
         List<File> videos = getListFiles(parentDir);
-        for (File video: videos) {
-            String fileName = video.getName();
-            String thumbName = fileName.substring(0, fileName.length() - 4);
-            String path = context.getExternalCacheDir().toString();
-            File thumb = new File(path, thumbName + ".png");
-            if (thumb.exists()) {
-                VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
-                videoFiles.add(videoFile);
-            } else {
-                try {
-                    thumb.createNewFile();
-                } catch (IOException e) {
-                    Log.e(TAG, "Error", e);
+        if (videos != null) {
+            for (File video : videos) {
+                String fileName = video.getName();
+                String thumbName = fileName.substring(0, fileName.length() - 4);
+                String path = context.getExternalCacheDir().toString();
+                File thumb = new File(path, thumbName + ".png");
+                if (thumb.exists()) {
+                    VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
+                    videoFiles.add(videoFile);
+                } else {
+                    try {
+                        thumb.createNewFile();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error", e);
+                    }
+                    thumb = createThumbnailFromFile(video, thumb);
+                    VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
+                    videoFiles.add(videoFile);
                 }
-                thumb = createThumbnailFromFile(video, thumb);
-                VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
-                videoFiles.add(videoFile);
             }
+            return videoFiles;
+        } else {
+            return null;
         }
-        return videoFiles;
     }
 
     private List<File> getListFiles(File parentDir) {
         ArrayList<File> listFiles = new ArrayList<>();
         File[] files = parentDir.listFiles();
-        for (File file: files) {
-            if (file.isDirectory()) {
-                listFiles.addAll(getListFiles(file));
-            } else listFiles.add(file);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    listFiles.addAll(getListFiles(file));
+                } else listFiles.add(file);
+            }
+            return listFiles;
+        } else {
+            return null;
         }
-        return listFiles;
     }
 
     private File createThumbnailFromFile(File file, File thumb) {
