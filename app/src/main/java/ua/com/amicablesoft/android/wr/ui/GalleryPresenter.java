@@ -11,6 +11,7 @@ import ua.com.amicablesoft.android.wr.dal.Repository;
 import ua.com.amicablesoft.android.wr.dal.VideoRepository;
 import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.models.Specification;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 /**
@@ -76,8 +77,9 @@ class GalleryPresenter {
         return currentPowerlifter.getLastName() + "-" + currentPowerlifter.getName();
     }
 
-    List<VideoFile> getVideoFiles() {
+    List<VideoFile> getVideoFiles(Specification specification) {
         VideoRepository videoRepository = new VideoRepository(context);
-        return videoRepository.getListVideoFiles(getCurrentPowerlifterName());
+        specification.setPowerlifterName(getCurrentPowerlifterName());
+        return videoRepository.getListVideoFiles(specification);
     }
 }

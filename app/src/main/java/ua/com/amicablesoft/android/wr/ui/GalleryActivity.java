@@ -30,6 +30,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.models.Specification;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
 import ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment;
 
@@ -44,6 +45,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
     private GalleryAdapter galleryAdapter;
     private DrawerAdapter drawerAdapter;
     private RecyclerView recyclerView;
+    private Specification specification;
     private Subscription subscription;
 
     @Override
@@ -78,9 +80,12 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         galleryPresenter = new GalleryPresenter(this, getApplicationContext());
         drawerAdapter = new DrawerAdapter(getApplicationContext());
         galleryPresenter.getCompetitions(getApplicationContext());
+        specification = new Specification();
         drawerAdapter.setButtonClickListener(new DrawerAdapter.ButtonClickListener() {
             @Override
-            public void onButtonClick() {
+            public void onButtonClick(Specification spec) {
+                specification = spec;
+                createObservable(specification);
                 drawer.closeDrawer(GravityCompat.END);
             }
         });
@@ -92,7 +97,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Powerlifter powerlifter = powerlifters.get(position);
                 galleryPresenter.setCurrentPowerlifter(powerlifter);
-                createObservable();
+                createObservable(specification);
             }
 
             @Override
@@ -174,12 +179,12 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         return names;
     }
 
-    private void createObservable() {
+    private void createObservable(final Specification specification) {
         showLoading();
         Observable<List<VideoFile>> listObservable = Observable.fromCallable(new Callable<List<VideoFile>>() {
             @Override
             public List<VideoFile> call() {
-                return galleryPresenter.getVideoFiles();
+                return galleryPresenter.getVideoFiles(specification);
             }
         });
 

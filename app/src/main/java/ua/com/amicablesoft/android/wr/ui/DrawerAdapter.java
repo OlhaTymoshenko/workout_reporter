@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ua.com.amicablesoft.android.wr.R;
+import ua.com.amicablesoft.android.wr.models.Specification;
 
 /**
  * Created by olha on 2/16/17.
@@ -22,7 +23,7 @@ import ua.com.amicablesoft.android.wr.R;
 class DrawerAdapter extends BaseAdapter {
 
     interface ButtonClickListener {
-        void onButtonClick();
+        void onButtonClick(Specification specification);
     }
 
     private static final int TITLE = 0;
@@ -34,9 +35,11 @@ class DrawerAdapter extends BaseAdapter {
     private LayoutInflater layoutInflater;
     private List<RadioButton> radioButtons = new ArrayList<>();
     private ButtonClickListener buttonClickListener;
+    private Specification specification;
 
     DrawerAdapter(Context context) {
         layoutInflater = (LayoutInflater.from(context));
+        specification = new Specification();
     }
 
     @Override
@@ -73,7 +76,7 @@ class DrawerAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
         int type = getItemViewType(position);
         if (convertView == null) {
@@ -89,12 +92,37 @@ class DrawerAdapter extends BaseAdapter {
                     convertView = layoutInflater.inflate(R.layout.drawer_checkbox, parent, false);
                     viewHolder.checkBox = (CheckBox) convertView.findViewById(R.id.check_box);
                     viewHolder.checkBox.setText(items.get(position));
+                    viewHolder.checkBox.setChecked(true);
+                    final ViewHolder finalViewHolder1 = viewHolder;
+                    viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (finalViewHolder1.checkBox.isChecked()) {
+                                if (position == 1) {
+                                    specification.setSquats(true);
+                                } else if (position == 2) {
+                                    specification.setBenchPress(true);
+                                } else if (position == 3) {
+                                    specification.setDeadLift(true);
+                                }
+                            } else {
+                                if (position == 1) {
+                                    specification.setSquats(false);
+                                } else if (position == 2) {
+                                    specification.setBenchPress(false);
+                                } else if (position == 3) {
+                                    specification.setDeadLift(false);
+                                }
+                            }
+                        }
+                    });
                     break;
                 case RADIO_BUTTON:
                     convertView = layoutInflater.inflate(R.layout.drawer_radio_button, parent, false);
                     viewHolder.radioButton = (RadioButton) convertView.findViewById(R.id.radio_button);
                     viewHolder.radioButton.setText(items.get(position));
                     radioButtons.add(viewHolder.radioButton);
+                    radioButtons.get(0).setChecked(true);
                     final ViewHolder finalViewHolder = viewHolder;
                     viewHolder.radioButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -111,13 +139,13 @@ class DrawerAdapter extends BaseAdapter {
                     });
                     break;
                 case BUTTON:
-                    convertView = layoutInflater.inflate(R.layout.drawer_button, null);
+                    convertView = layoutInflater.inflate(R.layout.drawer_button, parent, false);
                     viewHolder.button = (Button) convertView.findViewById(R.id.button);
                     viewHolder.button.setText(items.get(position));
                     viewHolder.button.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            buttonClickListener.onButtonClick();
+                            buttonClickListener.onButtonClick(specification);
                         }
                     });
                     break;

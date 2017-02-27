@@ -2,6 +2,7 @@ package ua.com.amicablesoft.android.wr.dal;
 
 import java.util.List;
 
+import ua.com.amicablesoft.android.wr.models.Specification;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 /**
@@ -10,5 +11,5 @@ import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 interface IVideoRepository {
 
-    List<VideoFile> getListVideoFiles(String powerlifter);
+    List<VideoFile> getListVideoFiles(Specification specification);
 }

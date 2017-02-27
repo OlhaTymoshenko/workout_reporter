@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ua.com.amicablesoft.android.wr.models.Specification;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 /**
@@ -29,31 +30,36 @@ public class VideoRepository implements IVideoRepository {
     }
 
     @Override
-    public List<VideoFile> getListVideoFiles(String powerlifter) {
+    public List<VideoFile> getListVideoFiles(Specification specification) {
         List<VideoFile> videoFiles = new ArrayList<>();
         File parentDir =
                 new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString()
-                        + "/" + powerlifter + "/");
+                        + "/" + specification.getPowerlifterName() + "/");
         List<File> videos = getListFiles(parentDir);
         if (videos != null) {
-            for (File video : videos) {
-                String fileName = video.getName();
-                String thumbName = fileName.substring(0, fileName.length() - 4);
-                String path = context.getExternalCacheDir().toString();
-                File thumb = new File(path, thumbName + ".png");
-                if (thumb.exists()) {
-                    VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
-                    videoFiles.add(videoFile);
-                } else {
-                    try {
-                        thumb.createNewFile();
-                    } catch (IOException e) {
-                        Log.e(TAG, "Error", e);
+            List<File> filteredVideos = filterListVideo(videos, specification);
+            if (filteredVideos != null) {
+                for (File video : filteredVideos) {
+                    String fileName = video.getName();
+                    String thumbName = fileName.substring(0, fileName.length() - 4);
+                    String path = context.getExternalCacheDir().toString();
+                    File thumb = new File(path, thumbName + ".png");
+                    if (thumb.exists()) {
+                        VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
+                        videoFiles.add(videoFile);
+                    } else {
+                        try {
+                            thumb.createNewFile();
+                        } catch (IOException e) {
+                            Log.e(TAG, "Error", e);
+                        }
+                        thumb = createThumbnailFromFile(video, thumb);
+                        VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
+                        videoFiles.add(videoFile);
                     }
-                    thumb = createThumbnailFromFile(video, thumb);
-                    VideoFile videoFile = new VideoFile(video.getPath(), thumb, thumbName);
-                    videoFiles.add(videoFile);
                 }
+            } else {
+                return null;
             }
             return videoFiles;
         } else {
@@ -99,5 +105,60 @@ public class VideoRepository implements IVideoRepository {
             }
         }
         return thumb;
+    }
+
+    private List<File> filterListVideo(List<File> videos, Specification specification) {
+        List<File> filteredVideos = new ArrayList<>();
+        boolean squats = specification.isSquats();
+        boolean benchPress = specification.isBenchPress();
+        boolean deadLift = specification.isDeadLift();
+        if (squats & benchPress & deadLift) {
+            filteredVideos = videos;
+        } else if (!squats & benchPress & deadLift) {
+            for (File file : videos) {
+                String name = file.getName();
+                if (name.contains("BenchPress") || name.contains("DeadLift")) {
+                    filteredVideos.add(file);
+                }
+            }
+        } else if (squats & !benchPress & deadLift) {
+            for (File file : videos) {
+                String name = file.getName();
+                if (name.contains("Squats") || name.contains("DeadLift")) {
+                    filteredVideos.add(file);
+                }
+            }
+        } else if (squats & benchPress & !deadLift) {
+            for (File file : videos) {
+                String name = file.getName();
+                if (name.contains("Squats") || name.contains("BenchPress")) {
+                    filteredVideos.add(file);
+                }
+            }
+        } else if (!squats & !benchPress & deadLift) {
+            for (File file : videos) {
+                String name = file.getName();
+                if (name.contains("DeadLift")) {
+                    filteredVideos.add(file);
+                }
+            }
+        } else if (squats & !benchPress & !deadLift) {
+            for (File file : videos) {
+                String name = file.getName();
+                if (name.contains("Squats")) {
+                    filteredVideos.add(file);
+                }
+            }
+        } else if (!squats & benchPress & !deadLift) {
+            for (File file : videos) {
+                String name = file.getName();
+                if (name.contains("BenchPress")) {
+                    filteredVideos.add(file);
+                }
+            }
+        } else if (!squats & !benchPress & !deadLift) {
+            filteredVideos = null;
+        }
+        return filteredVideos;
     }
 }
