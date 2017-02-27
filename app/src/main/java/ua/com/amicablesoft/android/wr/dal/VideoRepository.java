@@ -32,9 +32,18 @@ public class VideoRepository implements IVideoRepository {
     @Override
     public List<VideoFile> getListVideoFiles(Specification specification) {
         List<VideoFile> videoFiles = new ArrayList<>();
-        File parentDir =
-                new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString()
-                        + "/" + specification.getPowerlifterName() + "/");
+        File parentDir;
+        String competition = specification.getCompetition();
+        if (competition.equals("- None -")) {
+            parentDir =
+                    new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString()
+                            + "/" + specification.getPowerlifterName() + "/");
+        } else {
+            parentDir =
+                    new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString()
+                            + "/" + competition + "/" + specification.getPowerlifterName() + "/");
+        }
+
         List<File> videos = getListFiles(parentDir);
         if (videos != null) {
             List<File> filteredVideos = filterListVideo(videos, specification);

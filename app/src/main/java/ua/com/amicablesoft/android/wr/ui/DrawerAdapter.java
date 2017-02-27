@@ -134,6 +134,7 @@ class DrawerAdapter extends BaseAdapter {
                                         radioButton.setChecked(false);
                                     }
                                 }
+                                specification.setCompetition(finalViewHolder.radioButton.getText().toString());
                             }
                         }
                     });

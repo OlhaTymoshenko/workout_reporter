@@ -10,11 +10,13 @@ public class Specification {
     private boolean benchPress;
     private boolean deadLift;
     private String powerlifterName;
+    private String competition;
 
     public Specification() {
         squats = true;
         benchPress = true;
         deadLift = true;
+        competition = "- None -";
     }
 
     public boolean isSquats() {
@@ -47,5 +49,13 @@ public class Specification {
 
     public void setPowerlifterName(String powerlifterName) {
         this.powerlifterName = powerlifterName;
+    }
+
+    public String getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(String competition) {
+        this.competition = competition;
     }
 }
