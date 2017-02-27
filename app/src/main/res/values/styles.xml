@@ -56,4 +56,9 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="DrawerButton" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/bg_button_common</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
 </resources>

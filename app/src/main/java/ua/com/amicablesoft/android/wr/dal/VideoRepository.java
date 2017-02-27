@@ -43,7 +43,6 @@ public class VideoRepository implements IVideoRepository {
                     new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).toString()
                             + "/" + competition + "/" + specification.getPowerlifterName() + "/");
         }
-
         List<File> videos = getListFiles(parentDir);
         if (videos != null) {
             List<File> filteredVideos = filterListVideo(videos, specification);
