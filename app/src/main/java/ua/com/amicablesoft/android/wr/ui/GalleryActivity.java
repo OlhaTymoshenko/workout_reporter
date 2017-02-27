@@ -179,7 +179,7 @@ public class GalleryActivity extends AppCompatActivity implements GalleryView {
         Observable<List<VideoFile>> listObservable = Observable.fromCallable(new Callable<List<VideoFile>>() {
             @Override
             public List<VideoFile> call() {
-                return galleryPresenter.getListVideoFiles();
+                return galleryPresenter.getVideoFiles();
             }
         });
 
