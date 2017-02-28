@@ -80,6 +80,11 @@ class GalleryPresenter {
     List<VideoFile> getVideoFiles(Specification specification) {
         VideoRepository videoRepository = new VideoRepository(context);
         specification.setPowerlifterName(getCurrentPowerlifterName());
-        return videoRepository.getListVideoFiles(specification);
+        List<VideoFile> videoFiles = videoRepository.getListVideoFiles(specification);
+        if (videoFiles == null || videoFiles.size() == 0) {
+            return null;
+        } else {
+            return videoFiles;
+        }
     }
 }
