@@ -76,11 +76,7 @@ class MainPresenter {
         view.setPowerlifter(0);
     }
 
-    private void onCompetitionAdded() {
-        getCompetitionsFromRepository();
-    }
-
-    void getCompetitions() {
+    void onCompetitionAdded() {
         getCompetitionsFromRepository();
     }
 
@@ -88,9 +84,6 @@ class MainPresenter {
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
             public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
-                Competition competition = new Competition();
-                competition.setCompetition("- Add new competition -");
-                competitionArrayList.add(competition);
                 view.setListCompetitions(competitionArrayList);
             }
 
@@ -118,15 +111,6 @@ class MainPresenter {
         } else if (exercise == 2) {
             currentExercise = Exercise.DeadLift;
         }
-    }
-
-    void callWriteNewCompetition(String competition) {
-        repository.writeNewCompetition(competition, new IRepository.AddCompetitionCallback() {
-            @Override
-            public void onCompetitionAddedSuccess() {
-                onCompetitionAdded();
-            }
-        });
     }
 
     private String createVideoFileName() throws IOException {

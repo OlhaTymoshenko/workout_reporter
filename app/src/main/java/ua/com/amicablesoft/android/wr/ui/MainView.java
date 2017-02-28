@@ -27,5 +27,6 @@ interface MainView {
     void dismissLoading();
 
     void openAddPowerlifterView();
+    void openAddCompetitionView();
     void openVideoGallery();
 }

@@ -4,8 +4,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/action_add_lifter"
-            android:icon="@drawable/ic_add_circle_outline_black_36dp"
+            android:icon="@drawable/ic_person_add_black_36dp"
             android:title="@string/menu_add_powerlifter"/>
+        <item
+            android:id="@+id/action_add_competition"
+            android:icon="@drawable/ic_add_black_36dp"
+            android:title="@string/menu_add_competition"/>
         <item
             android:id="@+id/action_open_gallery"
             android:icon="@drawable/ic_photo_album_black_36dp"

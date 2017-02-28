@@ -25,16 +25,12 @@ public interface IRepository {
         void onDataNotAvailable();
     }
 
-    interface AddCompetitionCallback {
-        void onCompetitionAddedSuccess();
-    }
-
     void userExist(User user, LoadUserCallback loadUserCallback);
     void userSave(User user);
 
     void writeNewPowerlifter(String name, String lastName);
     void getPowerlifters(LoadPowerliftersCallback loadPowerliftersCallback);
 
-    void writeNewCompetition(String competition, AddCompetitionCallback addCompetitionCallback);
+    void writeNewCompetition(String competition);
     void getCompetitions(LoadCompetitionsCallback loadCompetitionsCallback);
 }

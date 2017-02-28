@@ -45,8 +45,7 @@ import ua.com.amicablesoft.android.wr.models.Powerlifter;
 import ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment;
 
 public class MainActivity extends AppCompatActivity implements MainView,
-        NavigationView.OnNavigationItemSelectedListener,
-        CompetitionDialogFragment.CompetitionDialogListener {
+        NavigationView.OnNavigationItemSelectedListener {
 
     private MainPresenter mainPresenter;
     private Spinner spinnerPowerlifters;
@@ -60,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
+    static final int REQUEST_ADD_COMPETITION = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +92,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Competition competition = competitions.get(position);
-                String nameOfCompetition = competition.getCompetition();
-                if (nameOfCompetition.contentEquals("- Add new competition -")) {
-                    new CompetitionDialogFragment().show(getSupportFragmentManager(), "dialog");
-                } else {
                     mainPresenter.changeCompetition(competition);
-                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -148,6 +143,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
         int id = item.getItemId();
         if (id == R.id.action_add_lifter) {
             openAddPowerlifterView();
+        } else if (id == R.id.action_add_competition) {
+            openAddCompetitionView();
         } else if (id == R.id.action_open_gallery) {
             openVideoGallery();
         } else if (id == R.id.action_sign_out) {
@@ -156,16 +153,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return false;
-    }
-
-    @Override
-    public void onOkButtonClick(String competition) {
-        mainPresenter.callWriteNewCompetition(competition);
-    }
-
-    @Override
-    public void onCancelButtonClick() {
-        mainPresenter.getCompetitions();
     }
 
     @Override
@@ -181,6 +168,11 @@ public class MainActivity extends AppCompatActivity implements MainView,
         if (requestCode == REQUEST_ADD_POWERLIFTER) {
             if (resultCode == RESULT_OK) {
                 mainPresenter.onPowerlifterAdded();
+            }
+        }
+        if (requestCode == REQUEST_ADD_COMPETITION) {
+            if (resultCode == RESULT_OK) {
+                mainPresenter.onCompetitionAdded();
             }
         }
     }
@@ -305,6 +297,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public void openAddPowerlifterView() {
         Intent intent = new Intent(this, AddPowerlifterActivity.class);
         startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
+    }
+
+    @Override
+    public void openAddCompetitionView() {
+        Intent intent = new Intent(this, AddCompetitionActivity.class);
+        startActivityForResult(intent, REQUEST_ADD_COMPETITION);
     }
 
     @Override

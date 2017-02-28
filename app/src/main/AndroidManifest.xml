@@ -26,22 +26,29 @@
         </activity>
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".ui.AddPowerlifterActivity"
             android:label="@string/title_activity_new_powerlifter"
             android:parentActivityName=".ui.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".ui.AddCompetitionActivity"
+            android:label="@string/title_activity_new_competition"
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".ui.GalleryActivity"
             android:label="@string/title_activity_gallery"
             android:parentActivityName=".ui.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <provider
@@ -59,6 +66,7 @@
             android:name="io.fabric.ApiKey"
             android:value="8eb01c7334bd89fdd39f20b0a5700be5729be9c2"
             tools:replace="android:value"/>
+
     </application>
 
 </manifest>

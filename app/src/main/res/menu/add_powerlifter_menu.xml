@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
         <item android:id="@+id/action_save_new_powerlifter"
-              android:title="@string/label_save_new_powerlifter"
+              android:title="@string/label_save"
               android:icon="@drawable/ic_done_white_36dp"
               app:showAsAction="always"/>
 </menu>

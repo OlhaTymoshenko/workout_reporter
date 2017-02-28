@@ -2,7 +2,6 @@ package ua.com.amicablesoft.android.wr.dal;
 
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -93,7 +92,7 @@ public class Repository implements IRepository {
     }
 
     @Override
-    public void writeNewCompetition(String nameOfCompetition, final AddCompetitionCallback addCompetitionCallback) {
+    public void writeNewCompetition(String nameOfCompetition) {
         DatabaseReference firebaseDatabase = getDatabaseReference();
         String userId = getUserId();
         String key = firebaseDatabase.child("users/" + userId + "/competitions").push().getKey();
@@ -101,12 +100,7 @@ public class Repository implements IRepository {
         competition.setCompetition(nameOfCompetition);
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("users/" + userId + "/competitions/" + key, competition);
-        firebaseDatabase.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                addCompetitionCallback.onCompetitionAddedSuccess();
-            }
-        });
+        firebaseDatabase.updateChildren(childUpdates);
     }
 
     @Override
