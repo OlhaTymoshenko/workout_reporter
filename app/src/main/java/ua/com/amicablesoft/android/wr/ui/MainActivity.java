@@ -27,10 +27,12 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.io.IOException;
@@ -120,6 +122,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
         });
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+        TextView nameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name_text_view);
+        nameTextView.setText(getUserName());
+        TextView emailTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email_text_view);
+        emailTextView.setText(getUserEmail());
         initPresenter();
     }
 
@@ -352,6 +358,16 @@ public class MainActivity extends AppCompatActivity implements MainView,
             listCompetitions.add(c.getCompetition());
         }
         return listCompetitions;
+    }
+
+    private String getUserEmail() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        return firebaseAuth.getCurrentUser().getEmail();
+    }
+
+    private String getUserName() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        return firebaseAuth.getCurrentUser().getDisplayName();
     }
 }
 
