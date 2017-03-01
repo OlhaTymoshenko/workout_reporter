@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:padding="15dp"
     android:orientation="horizontal"
-    tools:context="ua.com.amicablesoft.android.wr.ui.CommonProcessDialogFragment">
+    tools:context="ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment">
     <ProgressBar
         android:layout_width="60dp"
         android:layout_height="60dp"

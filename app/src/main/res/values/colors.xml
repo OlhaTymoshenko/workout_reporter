@@ -5,4 +5,12 @@
     <color name="colorAccent">#FFC107</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
+    <color name="colorText">#FFFFFF</color>
+    <color name="colorLightPrimary">#CFD8DC</color>
+    <color name="colorItemCommonNormal">@android:color/transparent</color>
+    <color name="colorCardBackground">#cf757575</color>
+    <color name="colorPrimary400">#78909c</color>
+    <color name="bg_button_disabled">#bdbdbd</color>
+    <color name="bg_button_normal">@color/colorPrimary</color>
+    <color name="bg_button_pressed">@color/colorPrimaryDark</color>
 </resources>

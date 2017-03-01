@@ -11,18 +11,22 @@ import ua.com.amicablesoft.android.wr.models.Powerlifter;
  * Created by lapa on 25.09.16.
  */
 
-public interface MainView {
-    void setExercise(Integer exercise);
-    void setPowerlifter(int position);
-    void setListPowerlifters(ArrayList<Powerlifter> list);
-    void setListCompetitions(ArrayList<Competition> listCompetitions);
-    void setCompetition(int position);
+interface MainView {
     void requestPermissions();
-    void showSnackbar(int message);
     void recordVideo(File videoFile) throws IOException;
 
+    void setListPowerlifters(ArrayList<Powerlifter> list);
+    void setListCompetitions(ArrayList<Competition> listCompetitions);
+
+    void setPowerlifter(int position);
+    void setCompetition(int position);
+    void setExercise(Integer exercise);
+
+    void showSnackbar(int message);
     void showLoading();
     void dismissLoading();
 
     void openAddPowerlifterView();
+    void openAddCompetitionView();
+    void openVideoGallery();
 }

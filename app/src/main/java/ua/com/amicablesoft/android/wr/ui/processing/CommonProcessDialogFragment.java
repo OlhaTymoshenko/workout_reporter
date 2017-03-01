@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.processing;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -20,7 +20,6 @@ public class CommonProcessDialogFragment extends BaseTitleLessDialogFragment {
 
     private static final String ARG_KEY__MESSAGE_RES_ID = "arg.messageResId";
     private static final String ARG_KEY__IS_CANCELABLE = "arg.isCancelable";
-
     private int messageId;
 
     @Override
@@ -28,7 +27,6 @@ public class CommonProcessDialogFragment extends BaseTitleLessDialogFragment {
         super.onCreate(savedInstanceState);
         messageId = getArguments().getInt(ARG_KEY__MESSAGE_RES_ID);
         boolean isCancelable = getArguments().getBoolean(ARG_KEY__IS_CANCELABLE, true);
-
         setCancelable(isCancelable);
     }
 
@@ -48,7 +46,6 @@ public class CommonProcessDialogFragment extends BaseTitleLessDialogFragment {
     public static void show(FragmentManager fm, int dialogId, @StringRes int messageResId) {
         Bundle args = new Bundle();
         args.putInt(ARG_KEY__MESSAGE_RES_ID, messageResId);
-
         CommonProcessDialogFragment newDialog = new CommonProcessDialogFragment();
         newDialog.setArguments(args);
         newDialog.show(fm, String.valueOf(dialogId));

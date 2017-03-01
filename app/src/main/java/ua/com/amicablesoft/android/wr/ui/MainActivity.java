@@ -10,13 +10,16 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,10 +27,12 @@ import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,26 +42,39 @@ import java.util.List;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment;
 
 public class MainActivity extends AppCompatActivity implements MainView,
-        CompetitionDialogFragment.CompetitionDialogListener {
+        NavigationView.OnNavigationItemSelectedListener {
 
+    private MainPresenter mainPresenter;
     private Spinner spinnerPowerlifters;
     private Spinner spinnerCompetitions;
-    private MainPresenter mainPresenter;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
     private File video;
+    private final List<Powerlifter> powerlifters = new ArrayList<>();
+    private final List<Competition> competitions = new ArrayList<>();
     private static final int DIALOG_ID = 3;
     static final int PERMISSIONS_REQUEST = 1;
     static final int REQUEST_VIDEO_CAPTURE = 0;
     static final int REQUEST_ADD_POWERLIFTER = 2;
-
-    private final List<Powerlifter> powerlifters = new ArrayList<>();
-    private final List<Competition> competitions = new ArrayList<>();
+    static final int REQUEST_ADD_COMPETITION = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+        drawerLayout = (DrawerLayout) findViewById(R.id.main_drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout,
+                R.string.drawer_open, R.string.drawer_close);
+        drawerLayout.addDrawerListener(drawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        drawerToggle.syncState();
+        drawerToggle.setDrawerIndicatorEnabled(true);
 
         spinnerPowerlifters = (Spinner) findViewById(R.id.spinner_powerlifter);
         spinnerPowerlifters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -74,17 +92,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Competition competition = competitions.get(position);
-                String nameOfCompetition = competition.getCompetition();
-                if (nameOfCompetition.contentEquals("- Add new competition -")) {
-                    new CompetitionDialogFragment().show(getSupportFragmentManager(), "dialog");
-                } else {
                     mainPresenter.changeCompetition(competition);
-                }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radio_group);
@@ -104,7 +115,44 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 mainPresenter.onNewVideoAction();
             }
         });
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        TextView nameTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_name_text_view);
+        nameTextView.setText(getUserName());
+        TextView emailTextView = (TextView) navigationView.getHeaderView(0).findViewById(R.id.user_email_text_view);
+        emailTextView.setText(getUserEmail());
         initPresenter();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_add_lifter) {
+            openAddPowerlifterView();
+        } else if (id == R.id.action_add_competition) {
+            openAddCompetitionView();
+        } else if (id == R.id.action_open_gallery) {
+            openVideoGallery();
+        } else if (id == R.id.action_sign_out) {
+            showLoading();
+            signOut();
+        }
+        drawerLayout.closeDrawer(GravityCompat.START);
+        return false;
     }
 
     @Override
@@ -122,6 +170,25 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 mainPresenter.onPowerlifterAdded();
             }
         }
+        if (requestCode == REQUEST_ADD_COMPETITION) {
+            if (resultCode == RESULT_OK) {
+                mainPresenter.onCompetitionAdded();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            try {
+                mainPresenter.createVideo();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mainPresenter.onSnackbarPermissions();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
@@ -145,107 +212,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            try {
-                mainPresenter.createVideo();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            mainPresenter.onSnackbarPermissions();
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_add_lifter:
-                openAddPowerlifterView();
-                return true;
-            case R.id.action_sign_out:
-                showLoading();
-                signOut();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-
-    }
-
-    @Override
-    public void setListPowerlifters(ArrayList<Powerlifter> list) {
-        powerlifters.clear();
-        powerlifters.addAll(list);
-        List<String> powerlifterNames = powerlifterNames(powerlifters);
-        ArrayAdapter powerlifterAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, powerlifterNames);
-        spinnerPowerlifters.setAdapter(powerlifterAdapter);
-    }
-
-    @Override
-    public void setListCompetitions(ArrayList<Competition> listCompetitions) {
-        competitions.clear();
-        competitions.addAll(listCompetitions);
-        List<String> competitions = competitions(listCompetitions);
-        ArrayAdapter competitionAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, competitions);
-        spinnerCompetitions.setAdapter(competitionAdapter);
-    }
-
-    @Override
-    public void setCompetition(int position) {
-        spinnerCompetitions.setSelection(position);
-    }
-
-    @Override
-    public void setPowerlifter(int position) {
-        spinnerPowerlifters.setSelection(position);
-    }
-
-    @Override
-    public void setExercise(Integer exercise) {
-        if (exercise == 0) {
-            RadioButton radioButtonSquats = (RadioButton) findViewById(R.id.radio_button_squats);
-            radioButtonSquats.setChecked(true);
-        } else if (exercise == 1) {
-            RadioButton radioButtonBenchPress = (RadioButton) findViewById(R.id.radio_button_bench_press);
-            radioButtonBenchPress.setChecked(true);
-        } else if (exercise == 2) {
-            RadioButton radioButtonDeadLift = (RadioButton) findViewById(R.id.radio_button_dead_lift);
-            radioButtonDeadLift.setChecked(true);
-        }
-    }
-
-    @Override
-    public void openAddPowerlifterView() {
-        Intent intent = new Intent(this, AddPowerlifterActivity.class);
-        startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
-    }
-
-    @Override
-    public void showLoading() {
-        CommonProcessDialogFragment.show(this.getFragmentManager(), DIALOG_ID);
-    }
-
-    @Override
-    public void dismissLoading() {
-        CommonProcessDialogFragment.dismiss(this.getFragmentManager(), DIALOG_ID);
-    }
-
-    @Override
-    public void showSnackbar(int message) {
-        Snackbar.make(findViewById(R.id.activity_main), message,
-                Snackbar.LENGTH_LONG).show();
-    }
-
-    @Override
     public void recordVideo(File videoFile) throws IOException {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         if (intent.resolveActivity(getPackageManager()) != null) {
@@ -265,6 +231,84 @@ public class MainActivity extends AppCompatActivity implements MainView,
             intent.putExtra(MediaStore.EXTRA_OUTPUT, contentUri);
             startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
         }
+    }
+
+    @Override
+    public void setListPowerlifters(ArrayList<Powerlifter> list) {
+        powerlifters.clear();
+        powerlifters.addAll(list);
+        List<String> powerlifterNames = powerlifterNames(powerlifters);
+        ArrayAdapter powerlifterAdapter =
+                new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, powerlifterNames);
+        spinnerPowerlifters.setAdapter(powerlifterAdapter);
+    }
+
+    @Override
+    public void setListCompetitions(ArrayList<Competition> listCompetitions) {
+        competitions.clear();
+        competitions.addAll(listCompetitions);
+        List<String> competitions = competitions(listCompetitions);
+        ArrayAdapter competitionAdapter =
+                new ArrayAdapter<>(getApplicationContext(), R.layout.spinner_item, competitions);
+        spinnerCompetitions.setAdapter(competitionAdapter);
+    }
+
+    @Override
+    public void setPowerlifter(int position) {
+        spinnerPowerlifters.setSelection(position);
+    }
+
+    @Override
+    public void setCompetition(int position) {
+        spinnerCompetitions.setSelection(position);
+    }
+
+    @Override
+    public void setExercise(Integer exercise) {
+        if (exercise == 0) {
+            RadioButton radioButtonSquats = (RadioButton) findViewById(R.id.radio_button_squats);
+            radioButtonSquats.setChecked(true);
+        } else if (exercise == 1) {
+            RadioButton radioButtonBenchPress = (RadioButton) findViewById(R.id.radio_button_bench_press);
+            radioButtonBenchPress.setChecked(true);
+        } else if (exercise == 2) {
+            RadioButton radioButtonDeadLift = (RadioButton) findViewById(R.id.radio_button_dead_lift);
+            radioButtonDeadLift.setChecked(true);
+        }
+    }
+
+    @Override
+    public void showSnackbar(int message) {
+        Snackbar.make(findViewById(R.id.activity_main), message,
+                Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showLoading() {
+        CommonProcessDialogFragment.show(this.getFragmentManager(), DIALOG_ID);
+    }
+
+    @Override
+    public void dismissLoading() {
+        CommonProcessDialogFragment.dismiss(this.getFragmentManager(), DIALOG_ID);
+    }
+
+    @Override
+    public void openAddPowerlifterView() {
+        Intent intent = new Intent(this, AddPowerlifterActivity.class);
+        startActivityForResult(intent, REQUEST_ADD_POWERLIFTER);
+    }
+
+    @Override
+    public void openAddCompetitionView() {
+        Intent intent = new Intent(this, AddCompetitionActivity.class);
+        startActivityForResult(intent, REQUEST_ADD_COMPETITION);
+    }
+
+    @Override
+    public void openVideoGallery() {
+        Intent intent = new Intent(this, GalleryActivity.class);
+        startActivity(intent);
     }
 
     private void signOut() {
@@ -314,9 +358,14 @@ public class MainActivity extends AppCompatActivity implements MainView,
         return listCompetitions;
     }
 
-    @Override
-    public void onOkButtonClick(String competition) {
-        mainPresenter.callWriteNewCompetition(competition);
+    private String getUserEmail() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        return firebaseAuth.getCurrentUser().getEmail();
+    }
+
+    private String getUserName() {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        return firebaseAuth.getCurrentUser().getDisplayName();
     }
 }
 
