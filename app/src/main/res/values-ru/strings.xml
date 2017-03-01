@@ -24,6 +24,7 @@
     <string name="snackbar_text_no_internet_connection">Нет Интернет соединения</string>
     <string name="snackbar_text_unknown_error">Неизвестная ошибка</string>
     <string name="snackbar_text_unknown_sign_in_response">Неизвестный ответ входа</string>
+    <string name="snackbar_text_install_app">Вам следует установить видеоплеер</string>
     <string name="label_save">Сохранить</string>
     <string name="edit_text_hint_name">Имя</string>
     <string name="edit_text_hint_last_name">Фамилия</string>

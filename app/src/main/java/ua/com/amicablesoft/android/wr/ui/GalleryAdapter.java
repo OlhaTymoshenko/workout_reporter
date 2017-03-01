@@ -2,7 +2,10 @@ package ua.com.amicablesoft.android.wr.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +43,14 @@ class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(galleryViewHolder.videoFile.getVideoPath()));
                 intent.setDataAndType(Uri.parse(galleryViewHolder.videoFile.getVideoPath()), "video/mp4");
-                context.startActivity(intent);
+                PackageManager packageManager = context.getPackageManager();
+                List<ResolveInfo> infos = packageManager.queryIntentActivities(intent, 0);
+                if (infos.size() > 0) {
+                    context.startActivity(intent);
+                } else {
+                    Snackbar.make(parent, context.getText(R.string.snackbar_text_install_app),
+                            Snackbar.LENGTH_LONG).show();
+                }
             }
         });
         return galleryViewHolder;

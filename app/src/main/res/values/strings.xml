@@ -24,6 +24,7 @@
     <string name="snackbar_text_no_internet_connection">No internet connection</string>
     <string name="snackbar_text_unknown_error">Unknown error</string>
     <string name="snackbar_text_unknown_sign_in_response">Unknown sign in response</string>
+    <string name="snackbar_text_install_app">You should install video player</string>
     <string name="label_save">Save</string>
     <string name="edit_text_hint_name">Name</string>
     <string name="edit_text_hint_last_name">Last name</string>
