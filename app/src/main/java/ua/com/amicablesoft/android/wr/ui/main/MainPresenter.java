@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.main;
 
 import android.os.Environment;
 

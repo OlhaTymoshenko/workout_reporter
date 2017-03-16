@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.gallery;
 
 import android.content.Context;
 
@@ -11,7 +11,7 @@ import ua.com.amicablesoft.android.wr.dal.Repository;
 import ua.com.amicablesoft.android.wr.dal.VideoRepository;
 import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
-import ua.com.amicablesoft.android.wr.models.Specification;
+import ua.com.amicablesoft.android.wr.dal.Specification;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 /**

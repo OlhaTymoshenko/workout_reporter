@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.gallery;
 
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
@@ -30,7 +30,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
-import ua.com.amicablesoft.android.wr.models.Specification;
+import ua.com.amicablesoft.android.wr.dal.Specification;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
 import ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment;
 

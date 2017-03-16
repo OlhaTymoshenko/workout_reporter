@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -42,6 +42,10 @@ import java.util.List;
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
+import ua.com.amicablesoft.android.wr.ui.AddCompetitionActivity;
+import ua.com.amicablesoft.android.wr.ui.AddPowerlifterActivity;
+import ua.com.amicablesoft.android.wr.ui.StartActivity;
+import ua.com.amicablesoft.android.wr.ui.gallery.GalleryActivity;
 import ua.com.amicablesoft.android.wr.ui.processing.CommonProcessDialogFragment;
 
 public class MainActivity extends AppCompatActivity implements MainView,

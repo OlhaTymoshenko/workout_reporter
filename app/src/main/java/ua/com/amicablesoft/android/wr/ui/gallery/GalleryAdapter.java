@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.gallery;
 
 import android.content.Context;
 import android.content.Intent;

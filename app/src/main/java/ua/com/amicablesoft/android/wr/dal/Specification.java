@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.models;
+package ua.com.amicablesoft.android.wr.dal;
 
 /**
  * Created by olha on 2/27/17.

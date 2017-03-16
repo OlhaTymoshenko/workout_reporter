@@ -1,4 +1,4 @@
-package ua.com.amicablesoft.android.wr.ui;
+package ua.com.amicablesoft.android.wr.ui.gallery;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ua.com.amicablesoft.android.wr.R;
-import ua.com.amicablesoft.android.wr.models.Specification;
+import ua.com.amicablesoft.android.wr.dal.Specification;
 
 /**
  * Created by olha on 2/16/17.

@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.Arrays;
 
 import ua.com.amicablesoft.android.wr.R;
+import ua.com.amicablesoft.android.wr.ui.main.MainActivity;
 
 public class StartActivity extends AppCompatActivity {
 
