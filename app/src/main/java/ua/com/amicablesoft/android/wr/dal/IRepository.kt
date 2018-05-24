@@ -1,26 +1,27 @@
+/*
+ * Created by Olha Tymoshenko on 5/24/18 8:34 PM.
+ * Copyright (c) 2018. All rights reserved.
+ */
+
 package ua.com.amicablesoft.android.wr.dal
 
 import ua.com.amicablesoft.android.wr.models.Competition
 import ua.com.amicablesoft.android.wr.models.Powerlifter
 import ua.com.amicablesoft.android.wr.models.User
-import java.util.*
 
-/**
- * Created by olha on 3/16/17.
- */
 interface IRepository {
 
     interface LoadUserCallback {
-        fun found(userFound: Boolean)
+        fun found(userFound: Boolean?)
     }
 
     interface LoadPowerliftersCallback {
-        fun onPowerliftersLoaded(powerlifterArrayList: ArrayList<Powerlifter>)
+        fun onPowerliftersLoaded(powerlifterArrayList: List<Powerlifter?>)
         fun onDataNotAvailable()
     }
 
     interface LoadCompetitionsCallback {
-        fun onCompetitionsLoaded(competitionArrayList: ArrayList<Competition>)
+        fun onCompetitionsLoaded(competitionArrayList: List<Competition?>)
         fun onDataNotAvailable()
     }
 

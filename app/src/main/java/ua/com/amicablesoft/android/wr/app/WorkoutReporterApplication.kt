@@ -1,12 +1,14 @@
+/*
+ * Created by Olha Tymoshenko on 5/24/18 8:34 PM.
+ * Copyright (c) 2018. All rights reserved.
+ */
+
 package ua.com.amicablesoft.android.wr.app
 
 import android.app.Application
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
 
-/**
- * Created by olha on 3/16/17.
- */
 class WorkoutReporterApplication : Application() {
 
     override fun onCreate() {

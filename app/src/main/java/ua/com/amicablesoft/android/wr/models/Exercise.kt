@@ -1,8 +1,12 @@
+/*
+ * Created by Olha Tymoshenko on 5/24/18 8:38 PM.
+ * Copyright (c) 2018. All rights reserved.
+ */
+
 package ua.com.amicablesoft.android.wr.models
 
-/**
- * Created by lapa on 25.09.16.
- */
 enum class Exercise {
-    Squats, BenchPress, DeadLift
+    SQUATS,
+    BENCHPRESS,
+    DEADLIFT
 }

@@ -2,16 +2,18 @@ package ua.com.amicablesoft.android.wr.ui.gallery;
 
 import android.content.Context;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ua.com.amicablesoft.android.wr.R;
 import ua.com.amicablesoft.android.wr.dal.IRepository;
 import ua.com.amicablesoft.android.wr.dal.Repository;
+import ua.com.amicablesoft.android.wr.dal.Specification;
 import ua.com.amicablesoft.android.wr.dal.VideoRepository;
 import ua.com.amicablesoft.android.wr.models.Competition;
 import ua.com.amicablesoft.android.wr.models.Powerlifter;
-import ua.com.amicablesoft.android.wr.dal.Specification;
 import ua.com.amicablesoft.android.wr.models.VideoFile;
 
 /**
@@ -33,8 +35,8 @@ class GalleryPresenter {
     void setPowerlifters() {
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override
-            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifters) {
-                view.setListPowerlifters(powerlifters);
+            public void onPowerliftersLoaded(@NotNull List<Powerlifter> powerlifterArrayList) {
+
             }
 
             @Override
@@ -48,7 +50,7 @@ class GalleryPresenter {
         repository = new Repository();
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
-            public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
+            public void onCompetitionsLoaded(@NotNull List<Competition> competitionArrayList) {
                 ArrayList<String> listItems = new ArrayList<>();
                 listItems.add(context.getString(R.string.title_exercise));
                 listItems.add(context.getString(R.string.title_squats));
@@ -87,4 +89,5 @@ class GalleryPresenter {
             return videoFiles;
         }
     }
+
 }

@@ -4,11 +4,15 @@ import android.os.Environment;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import ua.com.amicablesoft.android.wr.R;
@@ -42,9 +46,9 @@ class MainPresenter {
         repository = new Repository();
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override
-            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifters) {
-                view.setListPowerlifters(powerlifters);
-                if (powerlifters.isEmpty()) {
+            public void onPowerliftersLoaded(@NotNull List<Powerlifter> powerlifterArrayList) {
+                view.setListPowerlifters((ArrayList<Powerlifter>) powerlifterArrayList);
+                if (powerlifterArrayList.isEmpty()) {
                     view.openAddPowerlifterView();
                 }
                 view.dismissLoading();
@@ -58,14 +62,14 @@ class MainPresenter {
         getCompetitionsFromRepository();
         view.setPowerlifter(0);
         view.setExercise(1);
-        currentExercise = Exercise.BenchPress;
+        currentExercise = Exercise.BENCHPRESS;
     }
 
     void onPowerlifterAdded() {
         repository.getPowerlifters(new IRepository.LoadPowerliftersCallback() {
             @Override
-            public void onPowerliftersLoaded(ArrayList<Powerlifter> powerlifters) {
-                view.setListPowerlifters(powerlifters);
+            public void onPowerliftersLoaded(@NotNull List<Powerlifter> powerlifterArrayList) {
+                view.setListPowerlifters((ArrayList<Powerlifter>) powerlifterArrayList);
             }
 
             @Override
@@ -83,8 +87,8 @@ class MainPresenter {
     private void getCompetitionsFromRepository() {
         repository.getCompetitions(new IRepository.LoadCompetitionsCallback() {
             @Override
-            public void onCompetitionsLoaded(ArrayList<Competition> competitionArrayList) {
-                view.setListCompetitions(competitionArrayList);
+            public void onCompetitionsLoaded(@NotNull List<Competition> competitionArrayList) {
+                view.setListCompetitions((ArrayList<Competition>) competitionArrayList);
             }
 
             @Override
@@ -105,11 +109,11 @@ class MainPresenter {
 
     void changeExercise(Integer exercise) {
         if (exercise == 0) {
-            currentExercise = Exercise.Squats;
+            currentExercise = Exercise.SQUATS;
         } else if (exercise == 1) {
-            currentExercise = Exercise.BenchPress;
+            currentExercise = Exercise.BENCHPRESS;
         } else if (exercise == 2) {
-            currentExercise = Exercise.DeadLift;
+            currentExercise = Exercise.DEADLIFT;
         }
     }
 
@@ -153,12 +157,12 @@ class MainPresenter {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         final User user = new User(auth.getCurrentUser().getUid(), auth.getCurrentUser().getEmail());
         repository.userExist(user, new IRepository.LoadUserCallback() {
-                    @Override
-                    public void found(boolean userFound) {
-                        if (!userFound) {
-                            repository.userSave(user);
-                        }
-                    }
+            @Override
+            public void found(@Nullable Boolean userFound) {
+                if (!userFound) {
+                    repository.userSave(user);
+                }
+            }
                 });
     }
 
