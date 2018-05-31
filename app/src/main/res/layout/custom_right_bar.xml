@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="wrap_content"
+              android:layout_height="match_parent"
+              android:layout_gravity="end">
+    <ImageView
+        android:id="@+id/right_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_marginEnd="@dimen/common_margin"
+        android:layout_marginRight="@dimen/common_margin"
+        android:clickable="true"
+        android:src="@drawable/ic_more_horiz_white_36dp"/>
+
+</LinearLayout>

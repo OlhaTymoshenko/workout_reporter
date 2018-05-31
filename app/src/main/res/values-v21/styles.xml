@@ -6,4 +6,9 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
     </style>
+
+    <style name="DrawerButton" parent="Widget.AppCompat.Button">
+        <item name="android:backgroundTint">@drawable/bg_button_common</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
 </resources>
