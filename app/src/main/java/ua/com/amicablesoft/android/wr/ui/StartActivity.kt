@@ -41,7 +41,7 @@ class StartActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN) {
             val idpResponse = IdpResponse.fromResultIntent(data)
-            if (resultCode == com.firebase.ui.auth.ResultCodes.OK) {
+            if (resultCode == RESULT_OK) {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("response", idpResponse)
                 startActivity(intent)
@@ -53,12 +53,12 @@ class StartActivity : AppCompatActivity() {
                     startAuthActivity()
                     return
                 }
-                if (idpResponse.errorCode == ErrorCodes.NO_NETWORK) {
+                if (idpResponse.error?.errorCode == ErrorCodes.NO_NETWORK) {
                     showSnackbar(R.string.snackbar_text_no_internet_connection)
                     startAuthActivity()
                     return
                 }
-                if (idpResponse.errorCode == ErrorCodes.UNKNOWN_ERROR) {
+                if (idpResponse.error?.errorCode == ErrorCodes.UNKNOWN_ERROR) {
                     showSnackbar(R.string.snackbar_text_unknown_error)
                     startAuthActivity()
                     return
@@ -72,8 +72,9 @@ class StartActivity : AppCompatActivity() {
     private fun startAuthActivity() {
         startActivityForResult(
                 AuthUI.getInstance().createSignInIntentBuilder()
-                        .setProviders(Arrays.asList<AuthUI.IdpConfig>(AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
-                                AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build()))
+                        .setAvailableProviders(Arrays.asList<AuthUI.IdpConfig>(
+                                AuthUI.IdpConfig.EmailBuilder().build(),
+                                AuthUI.IdpConfig.GoogleBuilder().build()))
                         .setTheme(R.style.AppTheme)
                         .setLogo(R.drawable.ic_icon)
                         .build(),

@@ -12,7 +12,7 @@ import android.view.Window
 
 open class BaseTitleLessDialogFragment : DialogFragment() {
 
-    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
 
         // request a window without the title

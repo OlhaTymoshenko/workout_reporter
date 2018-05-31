@@ -6,4 +6,4 @@
 package ua.com.amicablesoft.android.wr.models
 
 
-data class Competition (val competition: String?)
+data class Competition(var competition: String? = null)

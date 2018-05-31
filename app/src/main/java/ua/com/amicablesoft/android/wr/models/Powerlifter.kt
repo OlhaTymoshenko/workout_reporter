@@ -6,4 +6,4 @@
 package ua.com.amicablesoft.android.wr.models
 
 
-data class Powerlifter(var name: String?, val lastName: String?)
+data class Powerlifter(var name: String? = null, var lastName: String? = null)
